@@ -19,10 +19,50 @@
     {
       "id": 1,
       "user_id": 1,
-      "full_name": "Jane Doe",
-      "resume": "https://example.com/resume/jane_doe.pdf",
-      "skills": "Python, SQL, Communication",
-      "experience": "2 years as Data Analyst"
+      "name": "Jane Doe",
+      "publicationNumber": "Publicación 2",
+      "cv": "Jane_Doe_CV.pdf",
+      "posible": false
+    },
+    {
+      "id": 2,
+      "user_id": 2,
+      "name": "Carlos León",
+      "publicationNumber": "Publicación 3",
+      "cv": "Carlos_Leon_CV.pdf",
+      "posible": true
+    },
+    {
+      "id": 3,
+      "user_id": 3,
+      "name": "Lucía Torres",
+      "publicationNumber": "Publicación 4",
+      "cv": "Lucia_Torres_CV.pdf",
+      "posible": false
+    },
+    {
+      "id": 4,
+      "user_id": 4,
+      "name": "Pedro Gómez",
+      "publicationNumber": "Publicación 5",
+      "cv": "Pedro_Gomez_CV.pdf",
+      "posible": true
+    },
+    {
+      "id": 5,
+      "user_id": 5,
+      "name": "María Fernández",
+      "publicationNumber": "Publicación 6",
+      "cv": "Maria_Fernandez_CV.pdf",
+      "posible": true
+    },
+    {
+      "id": 6,
+      "user_id": 6,
+      "name": "José Salazar",
+      "publicationNumber": "Publicación 7",
+      "cv": "Jose_Salazar_CV.pdf",
+      "posible": false
     }
   ],
   "employer_profiles": [
@@ -108,4 +148,3 @@
     }
   ]
 }
-
