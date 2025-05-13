@@ -20,7 +20,7 @@
       "id": 1,
       "user_id": 1,
       "name": "Jane Doe",
-      "publicationNumber": "Publicación 2",
+      "publicationNumber": "Publicación 1",
       "cv": "Jane_Doe_CV.pdf",
       "posible": false
     },
@@ -28,7 +28,7 @@
       "id": 2,
       "user_id": 2,
       "name": "Carlos León",
-      "publicationNumber": "Publicación 3",
+      "publicationNumber": "Publicación 2",
       "cv": "Carlos_Leon_CV.pdf",
       "posible": true
     },
@@ -36,7 +36,7 @@
       "id": 3,
       "user_id": 3,
       "name": "Lucía Torres",
-      "publicationNumber": "Publicación 4",
+      "publicationNumber": "Publicación 3",
       "cv": "Lucia_Torres_CV.pdf",
       "posible": false
     },
@@ -44,7 +44,7 @@
       "id": 4,
       "user_id": 4,
       "name": "Pedro Gómez",
-      "publicationNumber": "Publicación 5",
+      "publicationNumber": "Publicación 4",
       "cv": "Pedro_Gomez_CV.pdf",
       "posible": true
     },
@@ -52,7 +52,7 @@
       "id": 5,
       "user_id": 5,
       "name": "María Fernández",
-      "publicationNumber": "Publicación 6",
+      "publicationNumber": "Publicación 5",
       "cv": "Maria_Fernandez_CV.pdf",
       "posible": true
     },
@@ -60,7 +60,7 @@
       "id": 6,
       "user_id": 6,
       "name": "José Salazar",
-      "publicationNumber": "Publicación 7",
+      "publicationNumber": "Publicación 6",
       "cv": "Jose_Salazar_CV.pdf",
       "posible": false
     }
