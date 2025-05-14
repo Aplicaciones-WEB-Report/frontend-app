@@ -1,0 +1,46 @@
+<template>
+  <div class="search-filter">
+    <input
+        :value="filtro"
+        @input="$emit('update:filtro', $event.target.value)"
+        type="text"
+        placeholder="Buscar por nombre..."
+    />
+    <button @click="$emit('filtrar')">Filtrar</button>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'CandidatoFiltro',
+  props: {
+    filtro: String
+  }
+};
+</script>
+
+<style scoped>
+.search-filter {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 8px;
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+button {
+  background-color: #204080;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+</style>
