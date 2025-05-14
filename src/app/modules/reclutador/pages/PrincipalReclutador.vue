@@ -68,7 +68,6 @@ export default {
   </div>
 </template>
 
-
 <style scoped>
 .dashboard {
   margin-bottom: 20px;
