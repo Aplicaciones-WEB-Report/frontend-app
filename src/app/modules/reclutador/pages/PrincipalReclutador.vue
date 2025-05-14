@@ -7,7 +7,3 @@ export default {
 
 <template>
 </template>
-
-<style scoped>
-
-</style>
