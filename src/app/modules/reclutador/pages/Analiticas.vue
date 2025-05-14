@@ -57,7 +57,6 @@ export default {
   </div>
 </template>
 
-
 <style scoped>
 .analiticas {
   margin-top:-30px;
