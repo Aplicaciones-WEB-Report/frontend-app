@@ -47,7 +47,7 @@ export default {
       <div v-for="(pub, index) in publicaciones" :key="index" class="card-container">
         <Card class="card">
           <template #title>
-            <p class="subtitle">Titulo</p>
+            <p class="subtitle">Título</p>
             <span class="titulo">{{ pub.titulo }}</span>
           </template>
           <template #footer>
@@ -83,7 +83,7 @@ export default {
   border-radius: 10px;
   margin-bottom: 20px;
 }
-.header h2{
+.header h2 {
   text-align: center;
   margin-top: -4px;
 }
@@ -108,7 +108,7 @@ export default {
   color: #011a2d;
 }
 .subtitle {
-  margin:10px;
+  margin: 10px;
   color: #6b7280;
 }
 .count {
@@ -140,5 +140,4 @@ export default {
   color: #388e3c;
   font-weight: 600;
 }
-  
 </style>
