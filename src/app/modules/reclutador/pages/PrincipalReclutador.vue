@@ -1,33 +1,3 @@
-<template>
-  <div class="dashboard">
-    <div class="header">
-      <h2>Publicaciones Recientes</h2>
-    </div>
-    <div class="cards">
-      <div v-for="(pub, index) in publicaciones" :key="index" class="card-container">
-        <Card class="card">
-          <template #title>
-            <p class="subtitle">Titulo</p>
-            <span class="titulo">{{ pub.titulo }}</span>
-          </template>
-          <template #footer>
-            <p class="subtitle">N° Solicitudes</p>
-            <p class="count">{{ pub.solicitudes }} Aplicaciones</p>
-          </template>
-        </Card>
-      </div>
-    </div>
-
-    <div class="analiticas-section">
-      <h2 class="analytics-title">Analíticas</h2>
-      <div class="chart-box">
-        <h3>Aplicaciones por Publicación</h3>
-        <Chart type="bar" :data="chartData1" :options="chartOptions" />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script>
 import Card from 'primevue/card';
 import Chart from 'primevue/chart';
@@ -67,6 +37,37 @@ export default {
   }
 };
 </script>
+
+<template>
+  <div class="dashboard">
+    <div class="header">
+      <h2>Publicaciones Recientes</h2>
+    </div>
+    <div class="cards">
+      <div v-for="(pub, index) in publicaciones" :key="index" class="card-container">
+        <Card class="card">
+          <template #title>
+            <p class="subtitle">Titulo</p>
+            <span class="titulo">{{ pub.titulo }}</span>
+          </template>
+          <template #footer>
+            <p class="subtitle">N° Solicitudes</p>
+            <p class="count">{{ pub.solicitudes }} Aplicaciones</p>
+          </template>
+        </Card>
+      </div>
+    </div>
+
+    <div class="analiticas-section">
+      <h2 class="analytics-title">Analíticas</h2>
+      <div class="chart-box">
+        <h3>Aplicaciones por Publicación</h3>
+        <Chart type="bar" :data="chartData1" :options="chartOptions" />
+      </div>
+    </div>
+  </div>
+</template>
+
 
 <style scoped>
 .dashboard {
