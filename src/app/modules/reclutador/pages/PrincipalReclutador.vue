@@ -141,4 +141,5 @@ export default {
   color: #388e3c;
   font-weight: 600;
 }
+  
 </style>
