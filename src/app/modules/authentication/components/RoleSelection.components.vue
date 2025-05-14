@@ -4,8 +4,12 @@ import { selectRole } from "../services/roles.service.js";
 
 export default {
   name: "RoleSelection.components",
-  components: { HeaderComponent },
-  methods: {selectRole}
+  components: {
+    HeaderComponent
+  },
+  methods: {
+    selectRole
+  }
 };
 </script>
 
@@ -13,19 +17,38 @@ export default {
   <HeaderComponent />
   <div class="role-selection">
     <div class="roles">
-      <pv-card class="role-card postulante" @click="selectRole('postulante')">
+      <pv-card class="role-card postulante">
         <template #header>
           <i class="pi pi-user role-icon"></i>
           <div class="role-info">
             <span>Postulante</span>
           </div>
         </template>
+        <template #content>
+          <div class="card-footer">
+            <pv-button
+                label="Seleccionar"
+                class="boton"
+                @click="selectRole('postulante')"
+            />
+          </div>
+        </template>
       </pv-card>
-      <pv-card class="role-card reclutador" @click="selectRole('reclutador')">
+
+      <pv-card class="role-card reclutador">
         <template #header>
           <i class="pi pi-user role-icon"></i>
           <div class="role-info">
             <span>Reclutador</span>
+          </div>
+        </template>
+        <template #content>
+          <div class="card-footer">
+            <pv-button
+                label="Seleccionar"
+                class="boton"
+                @click="selectRole('reclutador')"
+            />
           </div>
         </template>
       </pv-card>
@@ -34,13 +57,10 @@ export default {
 </template>
 
 <style scoped>
-body {
-  font-family: 'Montserrat', sans-serif;
-}
-
 .role-selection {
   text-align: center;
   padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 .roles {
@@ -52,16 +72,17 @@ body {
 
 .role-card {
   width: 250px;
-  height: 250px;
-  cursor: pointer;
+  height: auto;
+  min-height: 280px;
+  cursor: default;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   transition: transform 0.3s ease;
-  padding: 0;
+  padding: 1rem 0.5rem;
 }
 
 .role-card:hover {
@@ -69,8 +90,9 @@ body {
 }
 
 .role-info {
+  margin-top: 1rem;
   text-align: center;
-  padding: 1rem;
+  padding: 1rem 0;
 }
 
 .postulante {
@@ -84,6 +106,7 @@ body {
 }
 
 .role-icon {
+  margin-top: 1rem;
   font-size: 6rem;
   color: inherit;
 }
@@ -93,4 +116,17 @@ body {
   font-weight: bold;
   color: inherit;
 }
+
+.boton {
+  background-color: white;
+padding: 10px;
+  border-radius: 15px;
+}
+
+.card-footer {
+  padding-bottom: 1rem;
+}
+
+
 </style>
+

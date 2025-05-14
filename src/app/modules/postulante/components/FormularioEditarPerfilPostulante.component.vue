@@ -61,7 +61,7 @@ const manejarArchivoSeleccionado = (event) => {
           icon="pi pi-times"
           class="p-button-rounded p-button-text boton-cerrar-edicion"
           @click="accionCancelar"
-          aria-label="Cerrar edición"
+          aria-label="Cerrar edici贸n"
       />
     </div>
 
@@ -77,7 +77,7 @@ const manejarArchivoSeleccionado = (event) => {
         </div>
 
         <div class="p-field">
-          <label for="correoPostulanteForm">Correo Electrónico</label>
+          <label for="correoPostulanteForm">Correo Electr贸nico</label>
           <pv-inputtext
               id="correoPostulanteForm"
               v-model="datosEditables.correo"
@@ -87,7 +87,7 @@ const manejarArchivoSeleccionado = (event) => {
         </div>
 
         <div class="p-field">
-          <label for="descripcionPostulanteForm">Descripción</label>
+          <label for="descripcionPostulanteForm">Descripci贸n</label>
           <pv-textarea
               id="descripcionPostulanteForm"
               v-model="datosEditables.descripcion"
@@ -106,7 +106,7 @@ const manejarArchivoSeleccionado = (event) => {
             <img
                 v-if="urlPrevisualizacion"
                 :src="urlPrevisualizacion"
-                alt="Previsualización Foto"
+                alt="Previsualizaci贸n Foto"
                 class="previsualizacion-logo"
             />
             <span v-else class="pi pi-user icono-placeholder-logo"></span>

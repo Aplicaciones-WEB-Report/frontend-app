@@ -1,11 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import FormularioEditarPerfilPostulante from '../components/FormularioEditarPerfilPostulante.component.vue';
+import FormularioEditarPerfilPostulante from '../components/FormularioEditarPerfilPostulante.component.vue'
 
 defineOptions({
   name: 'PerfilPostulante'
 });
-
+ß
 const perfil = ref({
   nombre: '',
   correo: '',
