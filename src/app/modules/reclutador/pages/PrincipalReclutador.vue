@@ -1,11 +1,11 @@
 <script>
+
 export default {
-  name: "PrincipalReclutador"
+  name: "PrincipalReclutador",
 }
 </script>
 
 <template>
-
 </template>
 
 <style scoped>

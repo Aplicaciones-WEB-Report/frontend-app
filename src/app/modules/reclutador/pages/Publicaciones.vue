@@ -1,125 +1,3 @@
-<template>
-<div class="reclutador-publicaciones">
-  <h2>Publicaciones</h2>
-
-  <div class="search-filter">
-    <input
-        v-model="filtroTitulo"
-        type="text"
-        placeholder="Buscar por titulo..."
-    />
-    <button @click="filtrarPublicaciones">Filtrar</button>
-</div>
-  <table>
-    <thead>
-    <tr>
-      <th>Titulo</th>
-      <th>Estado</th>
-      <th>Aplicaciones</th>
-      <th>Acciones</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr v-for ="(publicacion, index) in publicacionesFiltradasMostradas" :key="index">
-      <td>{{ publicacion.titulo }}</td>
-      <td>{{ publicacion.estado }}</td>
-      <td>{{ publicacion.aplicaciones }}</td>
-      <td>
-        <button class="ver" @click="abrirModalV(publicacion)">Ver </button>
-        <button class="editar" @click="abrirModalEd(publicacion)">Editar</button>
-        <button class="Eliminar" @click="abrirModalEl(publicacion)">Eliminar</button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
-  <div class="paginacion">
-    <button @click="cambiarPagina(paginaActual - 1)" :disabled="paginaActual === 1">Anterior</button>
-
-    <button
-        v-for="n in paginasVisibles"
-        :key="n"
-        :class="{ activa: paginaActual === n }"
-        @click="cambiarPagina(n)"
-    >{{ n }}</button>
-
-    <button @click="cambiarPagina(paginaActual + 1)" :disabled="paginaActual === totalPaginas">Siguiente</button>
-  </div>
-
-
-
-
-  <div class="button-new-publication">
-    <button class="new-publication" @click="abrirModalNuevaPublicacion">Nueva Publicación</button>
-  </div>
-
-  <!-- Modal Ver -->
-  <div v-if="modalVer" class="modal">
-    <div class="modal-content">
-      <h3>Detalle de Publicación</h3>
-      <p><strong>Puesto de Trabajo - Título:</strong> {{ publicacionSeleccionada.titulo }}</p>
-      <p><strong>Descripcion:</strong> {{ publicacionSeleccionada.descripcion}}</p>
-      <p><strong>Requisitos:</strong> {{ publicacionSeleccionada.requirements }}</p>
-      <p><strong>Requerimiento:</strong> {{ publicacionSeleccionada.requirements }}</p>
-      <p><strong>Propuesta Economica:</strong> {{ publicacionSeleccionada.salary_range }}</p>
-      <p>Estado de la Publicacion</p>
-      <button @click="modalStatus = false">Activo {{ publicacionSeleccionada.estado }}</button>
-      <button @click="modalStatus = false">Borrador {{ publicacionSeleccionada.estado }}</button>
-      <button @click="modalVer = false">Cerrar</button>
-    </div>
-  </div>
-
-  <!-- Modal Eliminar -->
-  <div v-if="modalEliminar" class="modal">
-    <div class="modal-content">
-      <h3>¿Esta seguro de eliminar esta publicacion?</h3>
-      <p>Cuando se elimine, se borrara todos los datos y no podra recuperarla despues.</p>
-      <p>Título: {{ publicacionSeleccionada.titulo }}</p>
-      <button @click="eliminarPublicacionConfirmada">Sí, eliminar</button>
-      <button @click="modalEliminar = false">Cancelar</button>
-    </div>
-  </div>
-
-  <!-- MODAL DE CREAR / EDITAR PUBLICACIÓN -->
-  <div v-if="modalEditar" class="modal">
-    <div class="modal-content">
-      <h3>{{ publicacionSeleccionada ? 'Editar' : 'Nueva' }} Publicación</h3>
-
-      <form @submit.prevent="guardarPublicacion">
-        <label>Puesto de  Trabajo - Titulo</label>
-        <input v-model="formulario.titulo" type="text" required />
-
-
-        <label>Descripción del Trabajo:</label>
-        <textarea v-model="formulario.descripcion"></textarea>
-
-        <label>Requisitos:</label>
-        <textarea v-model="formulario.requirements"></textarea>
-
-        <label>Requisitos:</label>
-        <textarea v-model="formulario.requirements"></textarea>
-
-        <label>Propuesta Economica:</label>
-        <textarea v-model="formulario.salary_range"></textarea>
-
-
-        <p>Estado de la Publicacion</p>
-        <button @click="modalStatus = false">Activo {{ publicacionSeleccionada.estado }}</button>
-        <button @click="modalStatus = false">Borrador {{ publicacionSeleccionada.estado }}</button>
-
-        <div class="modal-buttons">
-          <button type="submit">Guardar</button>
-          <button type="button" @click="cerrarModalEditar">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-
-</div>
-</template>
-
-
-
 <script>
 import {
   getAllPublications,
@@ -128,8 +6,12 @@ import {
   updatePublication
 } from "../services/Publication.service.js";
 import {Publication} from "../model/Publication.entity.js";
+import ResultComponent from "../components/Result.component.vue";
 export default {
   name: "Publicaciones",
+  components: {
+    ResultComponent
+  },
   data() {
     return {
       publicaciones: [],
@@ -261,8 +143,125 @@ export default {
   }
 };
 </script>
+<template>
+  <div class="reclutador-publicaciones">
+    <h2>Publicaciones</h2>
+
+    <div class="search-filter">
+      <input
+          v-model="filtroTitulo"
+          type="text"
+          placeholder="Buscar por titulo..."
+      />
+      <button @click="filtrarPublicaciones">Filtrar</button>
+    </div>
+    <table>
+      <thead>
+      <tr>
+        <th>Titulo</th>
+        <th>Estado</th>
+        <th>Aplicaciones</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-for ="(publicacion, index) in publicacionesFiltradasMostradas" :key="index">
+        <td>{{ publicacion.titulo }}</td>
+        <td>{{ publicacion.estado }}</td>
+        <td>{{ publicacion.aplicaciones }}</td>
+        <td>
+          <button class="ver" @click="abrirModalV(publicacion)">Ver </button>
+          <button class="editar" @click="abrirModalEd(publicacion)">Editar</button>
+          <button class="Eliminar" @click="abrirModalEl(publicacion)">Eliminar</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <div class="paginacion">
+      <button @click="cambiarPagina(paginaActual - 1)" :disabled="paginaActual === 1">Anterior</button>
+
+      <button
+          v-for="n in paginasVisibles"
+          :key="n"
+          :class="{ activa: paginaActual === n }"
+          @click="cambiarPagina(n)"
+      >{{ n }}</button>
+
+      <button @click="cambiarPagina(paginaActual + 1)" :disabled="paginaActual === totalPaginas">Siguiente</button>
+    </div>
 
 
+
+
+    <div class="button-new-publication">
+      <button class="new-publication" @click="abrirModalNuevaPublicacion">Nueva Publicación</button>
+    </div>
+
+    <!-- Modal Ver -->
+    <div v-if="modalVer" class="modal">
+      <div class="modal-content">
+        <h3>Detalle de Publicación</h3>
+        <p><strong>Puesto de Trabajo - Título:</strong> {{ publicacionSeleccionada.titulo }}</p>
+        <p><strong>Descripcion:</strong> {{ publicacionSeleccionada.descripcion}}</p>
+        <p><strong>Requisitos:</strong> {{ publicacionSeleccionada.requirements }}</p>
+        <p><strong>Requerimiento:</strong> {{ publicacionSeleccionada.requirements }}</p>
+        <p><strong>Propuesta Economica:</strong> {{ publicacionSeleccionada.salary_range }}</p>
+        <p>Estado de la Publicacion</p>
+        <button @click="modalStatus = false">Activo {{ publicacionSeleccionada.estado }}</button>
+        <button @click="modalStatus = false">Borrador {{ publicacionSeleccionada.estado }}</button>
+        <button @click="modalVer = false">Cerrar</button>
+      </div>
+    </div>
+
+    <!-- Modal Eliminar -->
+    <div v-if="modalEliminar" class="modal">
+      <div class="modal-content">
+        <h3>¿Esta seguro de eliminar esta publicacion?</h3>
+        <p>Cuando se elimine, se borrara todos los datos y no podra recuperarla despues.</p>
+        <p>Título: {{ publicacionSeleccionada.titulo }}</p>
+        <button @click="eliminarPublicacionConfirmada">Sí, eliminar</button>
+        <button @click="modalEliminar = false">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- MODAL DE CREAR / EDITAR PUBLICACIÓN -->
+    <div v-if="modalEditar" class="modal">
+      <div class="modal-content">
+        <h3>{{ publicacionSeleccionada ? 'Editar' : 'Nueva' }} Publicación</h3>
+
+        <form @submit.prevent="guardarPublicacion">
+          <label>Puesto de  Trabajo - Titulo</label>
+          <input v-model="formulario.titulo" type="text" required />
+
+
+          <label>Descripción del Trabajo:</label>
+          <textarea v-model="formulario.descripcion"></textarea>
+
+          <label>Requisitos:</label>
+          <textarea v-model="formulario.requirements"></textarea>
+
+          <label>Requisitos:</label>
+          <textarea v-model="formulario.requirements"></textarea>
+
+          <label>Propuesta Economica:</label>
+          <textarea v-model="formulario.salary_range"></textarea>
+
+
+          <p>Estado de la Publicacion</p>
+          <button @click="modalStatus = false">Activo {{ publicacionSeleccionada.estado }}</button>
+          <button @click="modalStatus = false">Borrador {{ publicacionSeleccionada.estado }}</button>
+
+          <div class="modal-buttons">
+            <button type="submit">Guardar</button>
+            <button type="button" @click="cerrarModalEditar">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <ResultComponent />
+
+  </div>
+</template>
 
 <style scoped>
 .reclutador-publicaciones {

@@ -1,7 +1,6 @@
 <script>
 import HeaderComponent from "../../../shared/Header.component.vue";
 import ReclutadorSidebar from "../../../shared/ReclutadorSidebar.vue";
-
 export default {
   name: "LayoutReclutador.component",
   components: {
@@ -19,6 +18,7 @@ export default {
       <main class="content-area">
         <router-view></router-view>
       </main>
+
     </div>
   </div>
 </template>
