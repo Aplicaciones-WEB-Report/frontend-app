@@ -1,3 +1,18 @@
+<script>
+export default {
+  name: 'CandidatoModal',
+  props: {
+    candidato: Object
+  },
+  methods: {
+    setEstado(nuevo) {
+      this.candidato.status = nuevo;
+      this.candidato.posible = nuevo === 'Posible';
+    }
+  }
+};
+</script>
+
 <template>
   <div class="modal">
     <div class="modal-content">
@@ -26,21 +41,6 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  name: 'CandidatoModal',
-  props: {
-    candidato: Object
-  },
-  methods: {
-    setEstado(nuevo) {
-      this.candidato.status = nuevo;
-      this.candidato.posible = nuevo === 'Posible';
-    }
-  }
-};
-</script>
 
 <style scoped>
 .modal {

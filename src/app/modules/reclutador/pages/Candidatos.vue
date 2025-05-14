@@ -1,24 +1,3 @@
-<template>
-  <div class="reclutador-candidatos">
-    <h2>Candidatos</h2>
-
-    <CandidatoFiltro @filtrar="filtrarCandidatos" v-model:filtro="filtroNombre" />
-
-    <CandidatoTabla :candidatos="candidatosFiltradosMostrados" @verMas="abrirModal" />
-
-    <div class="preguntar-ia-container">
-      <button class="preguntar-ia" @click="mostrarTodos">Preguntar IA</button>
-    </div>
-
-    <CandidatoModal
-        v-if="mostrarModal"
-        :candidato="modalData"
-        @actualizar="actualizarEstado"
-        @cerrar="cerrarModal"
-    />
-  </div>
-</template>
-
 <script>
 import CandidatoFiltro from '../components/candidato/CandidatoFiltro.vue'
 import CandidatoTabla from '../components/candidato/CandidatoTabla.vue'
@@ -117,6 +96,27 @@ export default {
   }
 }
 </script>
+
+<template>
+  <div class="reclutador-candidatos">
+    <h2>Candidatos</h2>
+
+    <CandidatoFiltro @filtrar="filtrarCandidatos" v-model:filtro="filtroNombre" />
+
+    <CandidatoTabla :candidatos="candidatosFiltradosMostrados" @verMas="abrirModal" />
+
+    <div class="preguntar-ia-container">
+      <button class="preguntar-ia" @click="mostrarTodos">Preguntar IA</button>
+    </div>
+
+    <CandidatoModal
+        v-if="mostrarModal"
+        :candidato="modalData"
+        @actualizar="actualizarEstado"
+        @cerrar="cerrarModal"
+    />
+  </div>
+</template>
 
 <style scoped>
 .reclutador-candidatos {

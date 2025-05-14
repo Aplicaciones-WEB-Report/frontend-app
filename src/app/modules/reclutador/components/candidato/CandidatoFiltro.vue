@@ -1,3 +1,12 @@
+<script>
+export default {
+  name: 'CandidatoFiltro',
+  props: {
+    filtro: String
+  }
+};
+</script>
+
 <template>
   <div class="search-filter">
     <input
@@ -9,15 +18,6 @@
     <button @click="$emit('filtrar')">Filtrar</button>
   </div>
 </template>
-
-<script>
-export default {
-  name: 'CandidatoFiltro',
-  props: {
-    filtro: String
-  }
-};
-</script>
 
 <style scoped>
 .search-filter {

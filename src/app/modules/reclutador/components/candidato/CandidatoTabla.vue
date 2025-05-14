@@ -1,3 +1,12 @@
+<script>
+export default {
+  name: 'CandidatoTabla',
+  props: {
+    candidatos: Array
+  }
+};
+</script>
+
 <template>
   <table>
     <thead>
@@ -22,15 +31,6 @@
     </tbody>
   </table>
 </template>
-
-<script>
-export default {
-  name: 'CandidatoTabla',
-  props: {
-    candidatos: Array
-  }
-};
-</script>
 
 <style scoped>
 table {
