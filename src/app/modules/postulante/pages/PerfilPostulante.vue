@@ -5,7 +5,6 @@ import FormularioEditarPerfilPostulante from '../components/FormularioEditarPerf
 defineOptions({
   name: 'PerfilPostulante'
 });
-ß
 const perfil = ref({
   nombre: '',
   correo: '',
