@@ -82,4 +82,5 @@ export default {
 .chart-title.blue {
   color: #114477;
 }
+  
 </style>
