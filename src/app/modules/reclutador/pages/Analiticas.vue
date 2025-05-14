@@ -64,7 +64,6 @@ export default {
   padding: 20px;
   font-family: 'Segoe UI', sans-serif;
 }
-
 .analiticas{
   background: linear-gradient(to right, #c3ec87, #85C872);
 }
@@ -75,13 +74,11 @@ export default {
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 25px;
 }
-
 .chart-title {
   color: #2e7d32;
   margin-bottom: 10px;
   font-size: 18px;
 }
-
 .chart-title.blue {
   color: #114477;
 }
