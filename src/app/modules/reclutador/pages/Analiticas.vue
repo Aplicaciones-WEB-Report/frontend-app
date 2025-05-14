@@ -67,7 +67,6 @@ export default {
 
 .analiticas{
   background: linear-gradient(to right, #c3ec87, #85C872);
-
 }
 .chart-box {
   background-color: white;
