@@ -1,18 +1,3 @@
-<template>
-  <div class="analiticas">
-
-    <div class="chart-box">
-      <h3 class="chart-title">Aplicaciones por Publicación</h3>
-      <Chart type="bar" :data="chartData1" :options="chartOptions" />
-    </div>
-
-    <div class="chart-box">
-      <h3 class="chart-title blue">Visualizaciones por Publicación</h3>
-      <Chart type="bar" :data="chartData2" :options="chartOptions" />
-    </div>
-  </div>
-</template>
-
 <script>
 import Chart from 'primevue/chart';
 
@@ -56,6 +41,22 @@ export default {
   }
 };
 </script>
+
+<template>
+  <div class="analiticas">
+
+    <div class="chart-box">
+      <h3 class="chart-title">Aplicaciones por Publicación</h3>
+      <Chart type="bar" :data="chartData1" :options="chartOptions" />
+    </div>
+
+    <div class="chart-box">
+      <h3 class="chart-title blue">Visualizaciones por Publicación</h3>
+      <Chart type="bar" :data="chartData2" :options="chartOptions" />
+    </div>
+  </div>
+</template>
+
 
 <style scoped>
 .analiticas {
