@@ -3,7 +3,7 @@ import HeaderComponent from "../../../shared/Header.component.vue";
 import PostulanteSidebar from "../../../shared/PostulanteSidebar.vue";
 
 export default {
-  name: "Layout.component",
+  name: "LayoutPostulante.component",
   components: {
     HeaderComponent,
     PostulanteSidebar,
@@ -12,7 +12,7 @@ export default {
 </script>
 
 <template>
-  <div class="layout-wrapper">
+  <div>
     <HeaderComponent />
     <div class="dashboard-container">
       <PostulanteSidebar />
@@ -24,5 +24,15 @@ export default {
 </template>
 
 <style scoped>
+.dashboard-container {
+  display: flex;
+  flex-grow: 1;
+}
 
+.content-area {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: #ffffff;
+  overflow-y: auto;
+}
 </style>
