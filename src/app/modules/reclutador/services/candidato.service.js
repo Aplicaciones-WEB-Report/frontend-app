@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3500/candidate_profiles';
+const API_URL = 'http://localhost:3000/candidate_profiles';
 
 export const CandidatoService = {
     async obtenerCandidatos() {
