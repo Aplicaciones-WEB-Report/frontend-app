@@ -8,28 +8,30 @@ export default {
 </script>
 
 <template>
-  <table>
-    <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Nro° Publicación</th>
-      <th>Curriculum Vitae</th>
-      <th>Estado</th>
-      <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr v-for="(candidato, index) in candidatos" :key="index">
-      <td>{{ candidato.name }}</td>
-      <td>{{ candidato.publicationNumber }}</td>
-      <td><a :href="candidato.cv" target="_blank">{{ candidato.cv }}</a></td>
-      <td>{{ candidato.status }}</td>
-      <td>
-        <button class="ver-mas" @click="$emit('verMas', candidato)">Ver más</button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+  <div class="overflow-x-auto">
+    <table>
+      <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Nro° Publicación</th>
+        <th>Curriculum Vitae</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-for="(candidato, index) in candidatos" :key="index">
+        <td>{{ candidato.name }}</td>
+        <td>{{ candidato.publicationNumber }}</td>
+        <td><a :href="candidato.cv" target="_blank">{{ candidato.cv }}</a></td>
+        <td>{{ candidato.status }}</td>
+        <td>
+          <button class="ver-mas" @click="$emit('verMas', candidato)">Ver más</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <style scoped>

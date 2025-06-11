@@ -8,14 +8,17 @@ export default {
 </script>
 
 <template>
-  <div class="search-filter">
+  <div class="flex flex-column sm:flex-row gap-3 mb-4 align-items-center">
     <input
         :value="filtro"
         @input="$emit('update:filtro', $event.target.value)"
         type="text"
+        class="p-inputtext p-component w-full sm:w-30rem"
         placeholder="Buscar por nombre..."
     />
-    <button @click="$emit('filtrar')">Filtrar</button>
+    <button @click="$emit('filtrar')" class="p-button p-component">
+      Filtrar
+    </button>
   </div>
 </template>
 

@@ -99,16 +99,30 @@ export default {
 
 <template>
   <div class="reclutador-candidatos">
-    <h2>Candidatos</h2>
+    <h2 class="text-2xl font-bold mb-4">Candidatos</h2>
 
-    <CandidatoFiltro @filtrar="filtrarCandidatos" v-model:filtro="filtroNombre" />
+    <!-- Filtro de búsqueda -->
+    <div class="mb-4">
+      <CandidatoFiltro
+          @filtrar="filtrarCandidatos"
+          v-model:filtro="filtroNombre"
+      />
+    </div>
 
-    <CandidatoTabla :candidatos="candidatosFiltradosMostrados" @verMas="abrirModal" />
+    <!-- Tabla de candidatos -->
+    <div class="overflow-auto">
+      <CandidatoTabla
+          :candidatos="candidatosFiltradosMostrados"
+          @verMas="abrirModal"
+      />
+    </div>
 
-    <div class="preguntar-ia-container">
+    <!-- Botón Preguntar IA centrado -->
+    <div class="mt-4 flex justify-content-center">
       <button class="preguntar-ia" @click="mostrarTodos">Preguntar IA</button>
     </div>
 
+    <!-- Modal -->
     <CandidatoModal
         v-if="mostrarModal"
         :candidato="modalData"
@@ -119,24 +133,26 @@ export default {
 </template>
 
 <style scoped>
+.preguntar-ia {
+  background-color: #a2d45e;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.preguntar-ia:hover {
+  background-color: #8bc34a;
+}
+
 .reclutador-candidatos {
-  padding: 20px;
+  padding: 1.5rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #2d3e50;
 }
 
-.preguntar-ia-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.preguntar-ia {
-  background-color: #a2d45e;
-  border: none;
-  padding: 10px 20px;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 10px;
-}
+/* H2 styling can rely on PrimeFlex in template with class */
 </style>

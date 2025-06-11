@@ -18,26 +18,36 @@ export default {
     <div class="modal-content">
       <h3>Candidatos</h3>
 
-      <label class="modal-label">Nombre del Candidato</label>
-      <input :value="candidato.name" type="text" class="modal-input" readonly />
-
-      <label class="modal-label">Puesto al que postula</label>
-      <input :value="candidato.publicationNumber" type="text" class="modal-input" readonly />
-
-      <label class="modal-label">Curriculum Vitae</label>
-      <div class="cv-container">
-        <input :value="candidato.cv" type="text" class="modal-input" readonly />
-        <a :href="candidato.cv" target="_blank" class="descargar-btn">Descargar</a>
+      <div class="mb-2">
+        <label class="modal-label">Nombre del Candidato</label>
+        <input :value="candidato.name" type="text" class="modal-input w-full" readonly />
       </div>
 
-      <label class="modal-label">Estado del Postulante</label>
-      <div class="estado-buttons">
-        <button :class="{ 'estado-activo': candidato.status === 'Posible' }" @click="setEstado('Posible')">Posible</button>
-        <button :class="{ 'estado-activo': candidato.status === 'Denegado' }" @click="setEstado('Denegado')">Denegado</button>
+      <div class="mb-2">
+        <label class="modal-label">Puesto al que postula</label>
+        <input :value="candidato.publicationNumber" type="text" class="modal-input w-full" readonly />
       </div>
 
-      <button class="actualizar" @click="$emit('actualizar', candidato)">Actualizar Estado</button>
-      <button class="cerrar" @click="$emit('cerrar')">Cerrar</button>
+      <div class="mb-3">
+        <label class="modal-label">Curriculum Vitae</label>
+        <div class="cv-container flex flex-column sm:flex-row align-items-start sm:align-items-center gap-2 mt-1 mb-3">
+          <input :value="candidato.cv" type="text" class="modal-input" readonly />
+          <a :href="candidato.cv" target="_blank" class="descargar-btn">Descargar</a>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="modal-label">Estado del Postulante</label>
+        <div class="estado-buttons flex flex-wrap gap-2 mt-1">
+          <button :class="{ 'estado-activo': candidato.status === 'Posible' }" @click="setEstado('Posible')">Posible</button>
+          <button :class="{ 'estado-activo': candidato.status === 'Denegado' }" @click="setEstado('Denegado')">Denegado</button>
+        </div>
+      </div>
+
+      <div class="flex flex-column gap-3 mt-3">
+        <button class="actualizar" @click="$emit('actualizar', candidato)">Actualizar Estado</button>
+        <button class="cerrar" @click="$emit('cerrar')">Cerrar</button>
+      </div>
     </div>
   </div>
 </template>
@@ -59,7 +69,8 @@ export default {
 .modal-content {
   background: white;
   padding: 30px;
-  width: 500px;
+  width: 90%;
+  max-width: 500px;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
@@ -95,11 +106,6 @@ export default {
   text-decoration: none;
   font-weight: 600;
   font-size: 14px;
-}
-
-.estado-buttons {
-  display: flex;
-  gap: 10px;
 }
 
 .estado-buttons button {
