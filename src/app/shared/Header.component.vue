@@ -18,6 +18,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  position: relative;
 }
 
 .header-card {
@@ -29,5 +30,31 @@ export default {
 .logo {
   height: 60px;
   width: auto;
+}
+
+/* Media query para móvil - 768px y menos */
+@media (max-width: 768px) {
+  .app-header {
+    justify-content: flex-end;
+    /* Mueve el contenido a la derecha */
+    padding: 0.5rem; /* Reduce el padding en móvil */
+  }
+
+  .header-card {
+    padding: 0.25rem;
+  }
+
+  .logo {
+    height: 65px;
+    /* Logo más pequeño en móvil */
+  }
+}
+
+/* Media query para tablets - entre 769px y 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .logo {
+    height: 50px; /* Tamaño intermedio para tablets */
+
+  }
 }
 </style>

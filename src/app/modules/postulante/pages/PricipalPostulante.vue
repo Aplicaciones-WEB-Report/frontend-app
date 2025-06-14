@@ -12,6 +12,18 @@ export default {
         { titulo: "Postulación 2", solicitudes: 7 },
         { titulo: "Postulación 3", solicitudes: 8 },
       ],
+      mensajes: [
+        {
+          titulo: "Publicación 1",
+          contenido: "Hola postulante, has sido aceptado en el puesto de trabajo, Felicidades.",
+          estado: "aceptado"
+        },
+        {
+          titulo: "Publicación 2",
+          contenido: "El proceso de reclutamiento demorara más de lo esperado. Sigue esperando respuesta por favor.",
+          estado: "proceso"
+        }
+      ],
       chartData1: {
         labels: ['Publicación 1', 'Publicación 2', 'Publicación 3', 'Publicación 4'],
         datasets: [
@@ -58,7 +70,24 @@ export default {
       </div>
     </div>
 
-
+    <div class="header mt-5" style="margin-top: 30px;">
+      <h2>Bandeja de Entrada</h2>
+    </div>
+    <div class="grid">
+      <div v-for="(msg, index) in mensajes" :key="index" class="col-12 md:col-6 lg:col-6">
+        <Card class="card-mensaje">
+          <template #title>
+            <span class="titulo-mensaje">{{ msg.titulo }}</span>
+            <span :class="['estado-badge', msg.estado]">
+              {{ msg.estado === 'aceptado' ? 'Aceptado' : 'En Proceso' }}
+            </span>
+          </template>
+          <template #content>
+            <p class="contenido-mensaje">{{ msg.contenido }}</p>
+          </template>
+        </Card>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -112,26 +141,82 @@ export default {
   padding: 10px;
   color: #333;
 }
-.analiticas-section {
-  margin-top: 40px;
-}
-.analytics-title {
-  background-color: #68c25c;
-  color: white;
-  padding: 10px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-.chart-box {
-  background-color: white;
-  padding: 20px;
+
+/* Estilos para la bandeja de entrada */
+.card-mensaje {
+  background-color: #f0f7ff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  padding: 15px;
+  margin-bottom: 20px;
 }
-.chart-box h3 {
-  margin-bottom: 15px;
-  color: #388e3c;
+.titulo-mensaje {
   font-weight: 600;
+  font-size: 16px;
+  color: #011a2d;
+  display: block;
+  margin-bottom: 10px;
+}
+.contenido-mensaje {
+  color: #333;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.estado-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  float: right;
+}
+.estado-badge.aceptado {
+  background-color: #68c25c;
+}
+.estado-badge.proceso {
+  background-color: #ffb74d;
+}
+
+/* Responsividad */
+@media screen and (max-width: 768px) {
+  .cards {
+    flex-direction: column;
+  }
+  .card {
+    margin-bottom: 15px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .card {
+    margin-bottom: 15px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .header h2 {
+    font-size: 1rem; /* Tamaño más pequeño en móviles */
+    padding: 0 10px; /* Menos padding en móviles */
+    white-space: nowrap; /* Evita que el texto se divida en dos líneas */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es muy largo */
+  }
+
+  .header {
+    height: auto; /* Altura automática para móviles */
+    padding: 10px 5px; /* Padding reducido en móviles */
+  }
+
+  .cards {
+    flex-direction: column;
+  }
+
+  .card {
+    margin-bottom: 15px;
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .header h2 {
+    font-size: 1.1rem; /* Tamaño intermedio para tablets */
+  }
 }
 </style>

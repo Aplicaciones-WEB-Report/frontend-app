@@ -158,27 +158,49 @@ export default {
       />
       <button @click="filtrarPublicaciones">Filtrar</button>
     </div>
-    <table>
-      <thead>
-      <tr>
-        <th>Titulo</th>
-        <th>Resultado</th>
-        <th>Mensaje</th>
-        <th>Acciones</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for ="(publicacion, index) in publicacionesFiltradasMostradas" :key="index">
-        <td>{{ publicacion.titulo }}</td>
-        <td>{{ publicacion.estado }}</td>
-        <td>{{ publicacion.aplicaciones }}</td>
-        <td>
-          <button class="ver" @click="abrirModalV(publicacion)">Ver </button>
+
+    <!-- Vista de tabla para desktop -->
+    <div class="desktop-table">
+      <table>
+        <thead>
+        <tr>
+          <th>Titulo</th>
+          <th>Resultado</th>
+          <th>Mensaje</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for ="(publicacion, index) in publicacionesFiltradasMostradas" :key="index">
+          <td>{{ publicacion.titulo }}</td>
+          <td>{{ publicacion.estado }}</td>
+          <td>{{ publicacion.aplicaciones }}</td>
+          <td>
+            <button class="ver" @click="abrirModalV(publicacion)">Ver </button>
+            <button class="editar" @click="abrirModalEd(publicacion)">Editar</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Vista de cards para móvil -->
+    <div class="mobile-cards">
+      <div v-for="(publicacion, index) in publicacionesFiltradasMostradas" :key="index" class="card">
+        <div class="card-header">
+          <h3>{{ publicacion.titulo }}</h3>
+          <span class="estado">{{ publicacion.estado }}</span>
+        </div>
+        <div class="card-body">
+          <p><strong>Mensaje:</strong> {{ publicacion.aplicaciones }}</p>
+        </div>
+        <div class="card-actions">
+          <button class="ver" @click="abrirModalV(publicacion)">Ver</button>
           <button class="editar" @click="abrirModalEd(publicacion)">Editar</button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+        </div>
+      </div>
+    </div>
+
     <div class="paginacion">
       <button @click="cambiarPagina(paginaActual - 1)" :disabled="paginaActual === 1">Anterior</button>
 
@@ -191,9 +213,6 @@ export default {
 
       <button @click="cambiarPagina(paginaActual + 1)" :disabled="paginaActual === totalPaginas">Siguiente</button>
     </div>
-
-
-
 
     <div class="button-new-publication">
       <button class="new-publication" @click="abrirModalNuevaPublicacion">Nueva Publicación</button>
@@ -226,6 +245,7 @@ export default {
     </div>
   </div>
 </template>
+
 <style scoped>
 .reclutador-publicaciones {
   padding: 20px;
@@ -240,6 +260,15 @@ export default {
   padding: 8px;
   width: 250px;
   margin-right: 10px;
+}
+
+/* Vista de cards para móvil - oculta por defecto */
+.mobile-cards {
+  display: none;
+}
+
+.desktop-table {
+  display: block;
 }
 
 table {
@@ -285,7 +314,6 @@ button.Eliminar {
   text-align: right;
   margin-top: 20px;
   margin-bottom: 20px;
-
 }
 
 .new-publication {
@@ -303,14 +331,19 @@ button.Eliminar {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
 }
 
 .modal-content {
-  background: black;
+  background: white;
   padding: 25px;
   border-radius: 10px;
   min-width: 300px;
+  max-width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
 }
+
 form {
   display: flex;
   flex-direction: column;
@@ -327,6 +360,7 @@ form input, form select, form textarea {
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -342,11 +376,12 @@ th, td {
 th {
   background-color: #8ce397;
 }
-td{
+
+td {
   background-color: #eaeaea;
 }
 
-.ver, .editar, .Eliminar{
+.ver, .editar, .Eliminar {
   margin: 0 4px;
   padding: 6px 12px;
   border: none;
@@ -354,6 +389,7 @@ td{
   border-radius: 13px;
   font-weight: bold;
 }
+
 .new-publication {
   margin-top: 1rem;
   padding: 6px 12px;
@@ -368,26 +404,6 @@ td{
 .editar { background-color: #FFC107; color: black; }
 .Eliminar { background-color: #f44336; color: white; }
 .new-publication { background-color: #2196F3; color: white; margin-top: 1rem; }
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  width: 400px;
-  max-width: 90%;
-}
 
 .modal-content h3 {
   margin-bottom: 1rem;
@@ -438,4 +454,178 @@ td{
   cursor: not-allowed;
 }
 
+/* Estilos para las cards de móvil */
+.card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  flex: 1;
+  min-width: 0;
+}
+
+.estado {
+  background-color: #8ce397;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.card-body {
+  margin-bottom: 15px;
+}
+
+.card-body p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.card-actions button {
+  flex: 1;
+  max-width: 80px;
+  font-size: 12px;
+  padding: 8px 12px;
+}
+
+/* Media queries para responsive */
+@media (max-width: 768px) {
+  .reclutador-publicaciones {
+    padding: 15px;
+  }
+
+  .search-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .search-filter input {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .search-filter button {
+    width: 100%;
+    padding: 10px;
+  }
+
+  /* Ocultar tabla en móvil */
+  .desktop-table {
+    display: none;
+  }
+
+  /* Mostrar cards en móvil */
+  .mobile-cards {
+    display: block;
+  }
+
+  .button-new-publication {
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  .new-publication {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  /* Paginación responsive */
+  .paginacion {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .paginacion button {
+    min-width: 40px;
+    padding: 8px 12px;
+  }
+
+  /* Modal responsive */
+  .modal-content {
+    margin: 20px;
+    padding: 20px;
+    min-width: unset;
+    width: calc(100% - 40px);
+  }
+
+  .modal-content h3 {
+    font-size: 18px;
+  }
+
+  .modal-content p {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .modal-content button {
+    width: 100%;
+    margin: 5px 0;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reclutador-publicaciones {
+    padding: 10px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .card-header h3 {
+    font-size: 14px;
+  }
+
+  .estado {
+    align-self: flex-start;
+    margin-left: 0;
+  }
+
+  .card-actions {
+    flex-direction: column;
+  }
+
+  .card-actions button {
+    max-width: none;
+    width: 100%;
+  }
+
+  .paginacion button {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}
 </style>

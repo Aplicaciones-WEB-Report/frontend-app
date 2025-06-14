@@ -1,23 +1,75 @@
-// src/app/modules/web/components/reclutador/ReclutadorSidebar.vue
 <script>
 import { logout } from '../modules/authentication/services/roles.service.js';
 
 export default {
   name: "ReclutadorSidebar",
-  methods: {logout}
+  data() {
+    return {
+      isMobileMenuOpen: false
+    };
+  },
+  methods: {
+    logout,
+    toggleMobileMenu() {
+      this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    },
+    closeMobileMenu() {
+      this.isMobileMenuOpen = false;
+    }
+  },
+  mounted() {
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768 && this.isMobileMenuOpen) {
+        const sidebar = this.$refs.sidebar;
+        const hamburger = this.$refs.hamburger;
+        if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+          this.closeMobileMenu();
+        }
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
+        this.isMobileMenuOpen = false;
+      }
+    });
+  }
 }
 </script>
 
 <template>
-  <aside class="sidebar reclutador-sidebar">
+  <!-- Botón hamburguesa - solo móvil -->
+  <button
+      ref="hamburger"
+      class="hamburger-btn"
+      @click="toggleMobileMenu"
+      :class="{ 'active': isMobileMenuOpen }"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- Overlay para móvil -->
+  <div
+      v-if="isMobileMenuOpen"
+      class="mobile-overlay"
+      @click="closeMobileMenu"
+  ></div>
+
+  <aside
+      ref="sidebar"
+      class="sidebar reclutador-sidebar"
+      :class="{ 'mobile-open': isMobileMenuOpen }"
+  >
     <nav>
       <ul>
-        <li><router-link to="/reclutador/panel-principal">Panel Principal</router-link></li>
-        <li><router-link to="/reclutador/publicaciones">Publicaciones</router-link></li>
-        <li><router-link to="/reclutador/candidatos">Candidatos</router-link></li>
-        <li><router-link to="/reclutador/analiticas">Analíticas</router-link></li>
-        <li><router-link to="/reclutador/asistencia-ia">Asistencia IA</router-link></li>
-        <li><router-link to="/reclutador/perfil">Perfil</router-link></li>
+        <li><router-link to="/reclutador/panel-principal" @click="closeMobileMenu">Panel Principal</router-link></li>
+        <li><router-link to="/reclutador/publicaciones" @click="closeMobileMenu">Publicaciones</router-link></li>
+        <li><router-link to="/reclutador/candidatos" @click="closeMobileMenu">Candidatos</router-link></li>
+        <li><router-link to="/reclutador/analiticas" @click="closeMobileMenu">Analíticas</router-link></li>
+        <li><router-link to="/reclutador/asistencia-ia" @click="closeMobileMenu">Asistencia IA</router-link></li>
+        <li><router-link to="/reclutador/perfil" @click="closeMobileMenu">Perfil</router-link></li>
       </ul>
     </nav>
     <div class="logout-section">
@@ -27,6 +79,57 @@ export default {
 </template>
 
 <style scoped>
+/* Botón hamburguesa */
+.hamburger-btn {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  background: #3B5998;
+  border: none;
+  border-radius: 8px;
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.hamburger-btn span {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger-btn.active span:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+.hamburger-btn.active span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger-btn.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Overlay móvil */
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
 .sidebar {
   width: 280px;
   background-color: #ffffff;
@@ -40,7 +143,6 @@ export default {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   overflow-y: auto;
 }
-
 
 nav ul {
   list-style: none;
@@ -77,7 +179,6 @@ nav li a:hover {
   padding-top: 20px;
   padding-bottom: 10px;
   text-align: center;
-
   flex-shrink: 0;
 }
 
@@ -92,5 +193,51 @@ nav li a:hover {
 
 .logout-link:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: flex;
+  }
+
+  .mobile-overlay {
+    display: block;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100vh;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    border: none;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebar.mobile-open {
+    left: 0;
+  }
+
+  .sidebar nav {
+    padding-top: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 250px;
+    left: -250px;
+  }
+
+  .hamburger-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .hamburger-btn span {
+    width: 20px;
+  }
 }
 </style>

@@ -4,6 +4,9 @@ import App from './App.vue'
 import router from "./app/routers/router.js";
 import Aura from '@primeuix/themes/aura';
 import 'primeicons/primeicons.css';
+import 'primeflex/primeflex.css';
+import 'primeflex/primeflex.css';
+
 
 import PrimeVue from 'primevue/config'
 import InputText from 'primevue/inputtext'
@@ -12,6 +15,7 @@ import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Dialog from 'primevue/dialog'
 import Textarea from 'primevue/textarea';
+
 
 const app = createApp(App);
 
