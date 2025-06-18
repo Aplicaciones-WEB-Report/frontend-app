@@ -1,8 +1,11 @@
 <script>
 import { logout } from '../modules/authentication/services/roles.service.js';
+import LanguageSwitcher from "../../components/languague-switcher.vue";
 
 export default {
   name: "PostulanteSidebar",
+  components: {LanguageSwitcher},
+
   data() {
     return {
       isMobileMenuOpen: false
@@ -66,12 +69,14 @@ export default {
   >
     <nav>
       <ul>
-        <li><router-link to="/postulante/panel-principal" @click="closeMobileMenu">Panel Principal</router-link></li>
-        <li><router-link to="/postulante/postulaciones" @click="closeMobileMenu">Postulaciones</router-link></li>
-        <li><router-link to="/postulante/bandeja-entrada" @click="closeMobileMenu">Bandeja de Entrada</router-link></li>
-        <li><router-link to="/postulante/perfil" @click="closeMobileMenu">Perfil</router-link></li>
+        <li><router-link to="/postulante/panel-principal" @click="closeMobileMenu">{{$t("panel")}}</router-link></li>
+        <li><router-link to="/postulante/postulaciones" @click="closeMobileMenu">{{$t("postulaciones")}}</router-link></li>
+        <li><router-link to="/postulante/bandeja-entrada" @click="closeMobileMenu">{{$t("bandeja")}}</router-link></li>
+        <li><router-link to="/postulante/perfil" @click="closeMobileMenu">{{$t("perfil")}}</router-link></li>
       </ul>
     </nav>
+    <LanguageSwitcher />
+
     <div class="logout-section">
       <a href="#" @click.prevent="logout" class="logout-link">Cerrar sesión</a>
     </div>
