@@ -1,8 +1,9 @@
 <script>
 import { logout } from '../modules/authentication/services/roles.service.js';
-
+import LanguageSwitcher from "../../components/languague-switcher.vue";
 export default {
   name: "ReclutadorSidebar",
+  components: {LanguageSwitcher},
   data() {
     return {
       isMobileMenuOpen: false
@@ -62,20 +63,30 @@ export default {
       class="sidebar reclutador-sidebar"
       :class="{ 'mobile-open': isMobileMenuOpen }"
   >
+
     <nav>
       <ul>
-        <li><router-link to="/reclutador/panel-principal" @click="closeMobileMenu">Panel Principal</router-link></li>
-        <li><router-link to="/reclutador/publicaciones" @click="closeMobileMenu">Publicaciones</router-link></li>
-        <li><router-link to="/reclutador/candidatos" @click="closeMobileMenu">Candidatos</router-link></li>
-        <li><router-link to="/reclutador/analiticas" @click="closeMobileMenu">Analíticas</router-link></li>
-        <li><router-link to="/reclutador/asistencia-ia" @click="closeMobileMenu">Asistencia IA</router-link></li>
-        <li><router-link to="/reclutador/perfil" @click="closeMobileMenu">Perfil</router-link></li>
+        <li><router-link to="/reclutador/panel-principal" @click="closeMobileMenu">{{ $t("panel") }}</router-link></li>
+        <li><router-link to="/reclutador/publicaciones" @click="closeMobileMenu">{{ $t("publicaciones") }}</router-link></li>
+        <li><router-link to="/reclutador/candidatos" @click="closeMobileMenu">{{ $t("candidatos") }}</router-link></li>
+        <li><router-link to="/reclutador/analiticas" @click="closeMobileMenu">{{ $t("analiticas") }}</router-link></li>
+        <li><router-link to="/reclutador/asistencia-ia" @click="closeMobileMenu">{{ $t("asistencia_ia") }}</router-link></li>
+        <li><router-link to="/reclutador/perfil" @click="closeMobileMenu">{{ $t("perfil") }}</router-link></li>
+
       </ul>
     </nav>
+    <div class="language-switcher-container">
+    </div>
+    <LanguageSwitcher />
     <div class="logout-section">
-      <a href="#" @click.prevent="logout" class="logout-link">Cerrar sesión</a>
+
+      <a href="#" @click.prevent="logout" class="logout-link">{{$t("cerrar_sesion")}}</a>
+
+
     </div>
   </aside>
+ <div>
+ </div>
 </template>
 
 <style scoped>
