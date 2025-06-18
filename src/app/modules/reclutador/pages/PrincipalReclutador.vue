@@ -1,3 +1,4 @@
+
 <script>
 import Card from 'primevue/card';
 import Chart from 'primevue/chart';
@@ -17,7 +18,7 @@ export default {
         datasets: [
           {
             label: 'Aplicaciones',
-            backgroundColor: ['#b2e4b2', '#a2d4a2', '#91c291', '#80b180'],
+            backgroundColor: ['#a8dadc', '#457b9d', '#1d3557', '#74c69d'],
             data: [32, 15, 10, 20]
           }
         ]
@@ -28,12 +29,15 @@ export default {
           legend: { display: false }
         },
         scales: {
-          y: {
-            beginAtZero: true
-          }
+          y: { beginAtZero: true }
         }
       }
     };
+  },
+  computed: {
+    totalAplicaciones() {
+      return this.publicaciones.reduce((acc, pub) => acc + pub.solicitudes, 0);
+    }
   }
 };
 </script>
@@ -43,15 +47,17 @@ export default {
     <div class="header">
       <h2>Publicaciones Recientes</h2>
     </div>
+
     <div class="cards">
       <div v-for="(pub, index) in publicaciones" :key="index" class="card-container">
         <Card class="card">
           <template #title>
-            <p class="subtitle">Título</p>
+            <p class="subtitle"><i class="pi pi-briefcase icon"></i> Título</p>
             <span class="titulo">{{ pub.titulo }}</span>
           </template>
           <template #footer>
-            <p class="subtitle">N° Solicitudes</p>
+            <p class="subtitle"><i class="pi pi-users icon"></i> N° Solicitudes</p>
+
             <p class="count">{{ pub.solicitudes }} Aplicaciones</p>
           </template>
         </Card>
@@ -59,10 +65,17 @@ export default {
     </div>
 
     <div class="analiticas-section">
-      <h2 class="analytics-title">Analíticas</h2>
+      <h2 class="analytics-title">
+        <i class="pi pi-chart-bar analytics-icon"></i> Analíticas
+      </h2>
       <div class="chart-box">
-        <h3>Aplicaciones por Publicación</h3>
+        <h3><i class="pi pi-chart-line chart-icon"></i> Aplicaciones por Publicación</h3>
         <Chart type="bar" :data="chartData1" :options="chartOptions" />
+
+        <div class="total-box">
+          <i class="pi pi-calculator total-icon"></i>
+          Total Aplicaciones: <span class="total-number">{{ totalAplicaciones }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -70,74 +83,143 @@ export default {
 
 <style scoped>
 .dashboard {
-  margin-bottom: 20px;
-  font-size: 10px;
+  padding: 20px;
+  background-color: #f5f9f7;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #f9fdf9;
 }
+
+/* Header */
 .header {
-  background-color: #285a84;
-  color: white;
-  height: 40px;
-  padding: 12px 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
+  background-color: #1d578c;
+  color: #fff;
+  padding: 16px 24px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 30px;
 }
 .header h2 {
-  text-align: center;
-  margin-top: -4px;
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
 }
+
+/* Cards layout */
 .cards {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 20px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+.card-container {
+  flex: 1 1 260px;
+  max-width: 300px;
 }
 .card {
-  background-color: #f0f7ff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
   padding: 20px;
   text-align: center;
+  transition: transform 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
 }
 .titulo {
-  background-color: white;
-  padding: 10px;
-  border-radius: 10px;
+  display: block;
+  background-color: rgba(5, 186, 162, 0.27);
+  padding: 12px;
+  border-radius: 8px;
   font-weight: 600;
-  font-size: 18px;
-  color: #011a2d;
+  font-size: 1.1rem;
+  color: #34495e;
 }
 .subtitle {
-  margin: 10px;
-  color: #6b7280;
+  margin: 10px 0 4px;
+  color: #7f8c8d;
+  font-size: 0.9rem;
 }
 .count {
-  background-color: white;
-  font-size: 22px;
-  border-radius: 10px;
+  background-color: #ecf0f1;
+  font-size: 1.2rem;
+  font-weight: bold;
   padding: 10px;
-  color: #333;
+  border-radius: 8px;
+  color: #2c3e50;
 }
+
+/* Analítica */
 .analiticas-section {
   margin-top: 40px;
 }
 .analytics-title {
-  background-color: #68c25c;
+  background-color: #27ae60;
   color: white;
-  padding: 10px;
+  padding: 12px;
   border-radius: 10px;
-  margin-bottom: 20px;
   text-align: center;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
+.analytics-icon {
+  font-size: 1.4rem;
+}
+
+/* Gráfico */
 .chart-box {
   background-color: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  max-width: 800px;
+  margin: 0 auto;
 }
 .chart-box h3 {
-  margin-bottom: 15px;
-  color: #388e3c;
+  margin-bottom: 20px;
+  color: #2d6a4f;
+  font-size: 1.1rem;
   font-weight: 600;
+  text-align: center;
+}
+
+/* Total apps */
+.total-box {
+  margin-top: 25px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1d3557;
+  background-color: #eaf4f4;
+  padding: 12px;
+  border-radius: 10px;
+}
+.total-icon {
+  margin-right: 8px;
+  color: #1d3557;
+}
+.total-number {
+  font-weight: bold;
+  color: #0d3b66;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cards {
+    flex-direction: column;
+    align-items: center;
+  }
+  .card-container {
+    max-width: 100%;
+  }
+  .analytics-title {
+    flex-direction: column;
+    gap: 4px;
+  }
 }
 </style>
