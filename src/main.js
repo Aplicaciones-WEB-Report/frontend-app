@@ -6,8 +6,7 @@ import Aura from '@primeuix/themes/aura';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 import 'primeflex/primeflex.css';
-
-
+import i18n from './i18n'
 import PrimeVue from 'primevue/config'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
@@ -18,10 +17,10 @@ import Textarea from 'primevue/textarea';
 
 
 const app = createApp(App);
-
-
+app.use(i18n)
 app.use(router)
 app.use(PrimeVue);
+
 app.component('pv-card', Card);
 app.component('pv-dialog', Dialog);
 app.component('pv-inputtext', InputText)
