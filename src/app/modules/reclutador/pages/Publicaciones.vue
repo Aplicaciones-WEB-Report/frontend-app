@@ -1,17 +1,15 @@
 <script>
+// Importamos los servicios para interactuar con la API y la entidad
 import {
   getAllPublications,
   deletePublication,
   addPublication,
   updatePublication
 } from "../services/Publication.service.js";
-import {Publication} from "../model/Publication.entity.js";
-import ResultComponent from "../components/Result.component.vue";
+import { Publication } from "../model/Publication.entity.js";
+
 export default {
   name: "Publicaciones",
-  components: {
-    ResultComponent
-  },
   data() {
     return {
       publicaciones: [],
@@ -20,236 +18,262 @@ export default {
       modalEditar: false,
       modalEliminar: false,
       publicacionSeleccionada: null,
-      titulo: '',
-      estado: 'Abierta',
-      descripcion: '',
-
-      formulario: {},
+      // El objeto 'formulario' almacenará los datos del modal de creación/edición
+      formulario: new Publication(),
       paginaActual: 1,
       publicacionesPorPagina: 5,
     };
   },
   computed: {
-    Publication() {
-      return Publication
-    },
+    // Computada para filtrar las publicaciones según el input de búsqueda
     publicacionesFiltradas() {
-      if (!this.filtroTitulo) return this.publicaciones;
+      if (!this.filtroTitulo) {
+        return this.publicaciones;
+      }
       return this.publicaciones.filter(pub =>
-          pub.titulo.toLowerCase().includes(this.filtroTitulo.toLowerCase())
+          pub.title.toLowerCase().includes(this.filtroTitulo.toLowerCase())
       );
     },
-    publicacionesFiltradasMostradas() {
+    // Computada para manejar la paginación de los resultados filtrados
+    publicacionesPaginadas() {
       const inicio = (this.paginaActual - 1) * this.publicacionesPorPagina;
       const fin = inicio + this.publicacionesPorPagina;
       return this.publicacionesFiltradas.slice(inicio, fin);
     },
+    // Computada para calcular el número total de páginas
     totalPaginas() {
       return Math.ceil(this.publicacionesFiltradas.length / this.publicacionesPorPagina);
     },
-    paginasVisibles() {
-      const total = this.totalPaginas;
-      const actual = this.paginaActual;
-      let inicio = Math.max(actual - 2, 1);
-      let fin = Math.min(inicio + 4, total);
-
-      if (fin - inicio < 4) {
-        inicio = Math.max(fin - 4, 1);
-      }
-
-      const paginas = [];
-      for (let i = inicio; i <= fin; i++) {
-        paginas.push(i);
-      }
-      return paginas;
-    }
   },
-
   methods: {
     async cargarPublicaciones() {
-      const res = await getAllPublications();
-      this.publicaciones = res.data;
+      try {
+        const [publicationsResponse, applicationsResponse] = await getAllPublications();
+        const jobOffers = publicationsResponse.data;
+        const applications = applicationsResponse.data;
+
+        const publicationsWithCounts = jobOffers.map(offer => {
+          const applicationCount = applications.filter(app => app.job_offer_id === offer.id).length;
+          return { ...offer, applicationCount };
+        });
+
+        this.publicaciones = publicationsWithCounts;
+      } catch (error) {
+        console.error("Error al cargar publicaciones:", error);
+        alert("No se pudieron cargar los datos. Asegúrate de que json-server esté corriendo.");
+      }
+    },
+    // Lógica para guardar (crear o actualizar) una publicación
+    // Publicaciones.vue -> methods
+
+    async guardarPublicacion() {
+      try {
+        // --- LÓGICA DE ACTUALIZACIÓN (PUT) ---
+        // Esta parte sigue siendo correcta. Si hay un ID, es una actualización.
+        if (this.formulario.id) {
+          const response = await updatePublication(this.formulario.id, this.formulario);
+          const publicacionActualizada = response.data;
+          const index = this.publicaciones.findIndex(p => p.id === publicacionActualizada.id);
+          if (index !== -1) {
+            publicacionActualizada.applicationCount = this.publicaciones[index].applicationCount;
+            this.publicaciones.splice(index, 1, publicacionActualizada);
+          }
+          alert('¡Publicación actualizada exitosamente!');
+
+        } else {
+          // --- LÓGICA DE CREACIÓN (POST) - CORRECCIÓN CLAVE ---
+
+          // 1. Creamos una copia del formulario para no modificar el original.
+          const payload = { ...this.formulario };
+
+          // 2. **ELIMINAMOS LA PROPIEDAD 'id' DEL OBJETO A ENVIAR.**
+          //    Este es el paso más importante.
+          delete payload.id;
+
+          // 3. Enviamos el 'payload' sin el id.
+          const response = await addPublication(payload);
+          const nuevaPublicacion = response.data; // Ahora SÍ tendrá un ID generado por el servidor.
+
+          // 4. Actualizamos el estado local con la respuesta correcta.
+          nuevaPublicacion.applicationCount = 0;
+          this.publicaciones.unshift(nuevaPublicacion);
+          alert('¡Publicación creada exitosamente!');
+        }
+
+        this.cerrarModalEditar();
+
+      } catch (error) {
+        alert('Error al guardar la publicación.');
+        console.error('Detalle del error:', error);
+      }
+    },
+    // Eliminar una publicación
+// Publicaciones.vue -> methods
+
+    async eliminarPublicacionConfirmada() {
+      if (!this.publicacionSeleccionada || !this.publicacionSeleccionada.id) {
+        alert("Error: No se ha seleccionado una publicación válida para eliminar.");
+        return;
+      }
+      try {
+        await deletePublication(this.publicacionSeleccionada.id);
+
+        // Actualización optimista: Eliminamos la publicación del array local
+        const index = this.publicaciones.findIndex(p => p.id === this.publicacionSeleccionada.id);
+        if (index !== -1) {
+          this.publicaciones.splice(index, 1);
+        }
+
+        this.modalEliminar = false;
+        // Ya no es necesario llamar a this.cargarPublicaciones()
+        alert("Publicación eliminada exitosamente.");
+
+      } catch (error) {
+        alert("Error al eliminar la publicación.");
+        console.error(error);
+      }
+    },
+    // Abrir modales
+    abrirModalVer(publicacion) {
+      this.publicacionSeleccionada = publicacion;
+      this.modalVer = true;
+    },
+    abrirModalEditar(publicacion) {
+      // **CORRECCIÓN DEFINITIVA: Usar una copia simple del objeto ({...})**
+      // Esto es más robusto y evita problemas de reactividad que pueden hacer que se pierda el ID.
+      console.log("Abriendo modal de edición para:", publicacion);
+      this.formulario = { ...publicacion };
+      this.modalEditar = true;
+    },
+    abrirModalEliminar(publicacion) {
+      console.log("Abriendo modal de eliminación para:", publicacion);
+      this.publicacionSeleccionada = publicacion;
+      this.modalEliminar = true;
+    },
+    abrirModalNuevaPublicacion() {
+      this.formulario = new Publication({ status: 'Activa' });
+      this.modalEditar = true;
     },
     cerrarModalEditar() {
       this.modalEditar = false;
-    },
-    async guardarPublicacion() {
-      try {
-        if (this.publicacionSeleccionada) {
-          await updatePublication(this.publicacionSeleccionada.id, this.formulario);
-          alert('¡Publicación actualizada exitosamente!');
-        } else {
-          await addPublication(this.formulario);
-          alert('¡Publicación creada exitosamente!');
-        }
-        this.modalEditar = false;
-        await this.cargarPublicaciones();
-      } catch (error) {
-        alert('Error al guardar la publicación.');
-        console.error(error);
-      }
     },
     cambiarPagina(nuevaPagina) {
       if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
         this.paginaActual = nuevaPagina;
       }
     },
-    abrirModalV(publicacion) {
-      this.publicacionSeleccionada = publicacion;
-      this.modalVer = true;
-    },
-    abrirModalEd(publicacion) {
-      this.publicacionSeleccionada = publicacion;
-      this.formulario = {
-        titulo: publicacion.titulo,
-        estado: publicacion.estado,
-        descripcion: publicacion.descripcion
-      };
-      this.modalEditar = true;
-    },
-    abrirModalEl(publicacion) {
-      this.publicacionSeleccionada = publicacion;
-      this.modalEliminar = true;
-    },
-    async eliminarPublicacionConfirmada() {
-      try {
-        await deletePublication(this.publicacionSeleccionada.id);
-        this.modalEliminar = false;
-        await this.cargarPublicaciones();
-        alert("Publicación eliminada exitosamente.");
-      } catch (error) {
-        alert("Error al eliminar la publicación.");
-        console.error(error);
-      }
-    },
-
-    abrirModalNuevaPublicacion() {
-      this.publicacionSeleccionada = null;
-      this.formulario = {
-        titulo: '',
-        estado: 'Abierta',
-        descripcion: ''
-      };
-      this.modalEditar = true;
-    },
-    filtrarPublicaciones() {
-      // Ya se aplica con v-model + computed
-    },
-
-
   },
   mounted() {
     this.cargarPublicaciones();
   }
 };
 </script>
+
 <template>
   <div class="reclutador-publicaciones">
     <h2>Publicaciones</h2>
 
-    <div class="search-filter">
-      <input
-          v-model="filtroTitulo"
-          type="text"
-          placeholder="Buscar por titulo..."
-      />
-      <button @click="filtrarPublicaciones">Filtrar</button>
-    </div>
-    <table>
-      <thead>
-      <tr>
-        <th>Titulo</th>
-        <th>Estado</th>
-        <th>Aplicaciones</th>
-        <th>Acciones</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for ="(publicacion, index) in publicacionesFiltradasMostradas" :key="index">
-        <td>{{ publicacion.titulo }}</td>
-        <td>{{ publicacion.estado }}</td>
-        <td>{{ publicacion.aplicaciones }}</td>
-        <td>
-          <button class="ver" @click="abrirModalV(publicacion)">Ver </button>
-          <button class="editar" @click="abrirModalEd(publicacion)">Editar</button>
-          <button class="Eliminar" @click="abrirModalEl(publicacion)">Eliminar</button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-    <div class="paginacion">
-      <button @click="cambiarPagina(paginaActual - 1)" :disabled="paginaActual === 1">Anterior</button>
+    <div class="top-controls">
+      <div class="search-filter">
+        <input
+            v-model="filtroTitulo"
+            type="text"
+            placeholder="Buscar por título..."
+        />
+      </div>
 
+    </div>
+
+    <div class="publication-grid">
+      <div class="header-cell">Título</div>
+      <div class="header-cell">Estado</div>
+      <div class="header-cell">Aplicaciones</div>
+      <div class="header-cell">Acciones</div>
+
+      <template v-if="publicacionesPaginadas.length > 0">
+        <template v-for="publicacion in publicacionesPaginadas" :key="publicacion.id">
+          <div class="data-cell">{{ publicacion.title }}</div>
+          <div class="data-cell">
+            <span :class="['status-badge', publicacion.status === 'Activa' ? 'status-active' : 'status-draft']">
+              {{ publicacion.status }}
+            </span>
+          </div>
+          <div class="data-cell">{{ publicacion.applicationCount }}</div>
+          <div class="data-cell acciones">
+            <button class="ver" @click="abrirModalVer(publicacion)">Ver</button>
+            <button class="editar" @click="abrirModalEditar(publicacion)">Editar</button>
+            <button class="eliminar" @click="abrirModalEliminar(publicacion)">Eliminar</button>
+          </div>
+        </template>
+      </template>
+
+      <div v-else class="no-data-cell">
+        No hay publicaciones para mostrar.
+      </div>
+    </div>
+
+    <div class="pagination" v-if="totalPaginas > 1">
+      <button @click="cambiarPagina(paginaActual - 1)" :disabled="paginaActual === 1">Anterior</button>
       <button
-          v-for="n in paginasVisibles"
+          v-for="n in totalPaginas"
           :key="n"
           :class="{ activa: paginaActual === n }"
           @click="cambiarPagina(n)"
       >{{ n }}</button>
-
       <button @click="cambiarPagina(paginaActual + 1)" :disabled="paginaActual === totalPaginas">Siguiente</button>
     </div>
-
-
-
-
     <div class="button-new-publication">
       <button class="new-publication" @click="abrirModalNuevaPublicacion">Nueva Publicación</button>
     </div>
-
-    <!-- Modal Ver -->
     <div v-if="modalVer" class="modal">
       <div class="modal-content">
         <h3>Detalle de Publicación</h3>
-        <p><strong>Puesto de Trabajo - Título:</strong> {{ publicacionSeleccionada.titulo }}</p>
-        <p><strong>Descripcion:</strong> {{ publicacionSeleccionada.descripcion}}</p>
+        <p><strong>Título:</strong> {{ publicacionSeleccionada.title }}</p>
+        <p><strong>Descripción:</strong> {{ publicacionSeleccionada.description }}</p>
         <p><strong>Requisitos:</strong> {{ publicacionSeleccionada.requirements }}</p>
-        <p><strong>Requerimiento:</strong> {{ publicacionSeleccionada.requirements }}</p>
-        <p><strong>Propuesta Economica:</strong> {{ publicacionSeleccionada.salary_range }}</p>
-        <p>Estado de la Publicacion</p>
-        <button @click="modalStatus = false">Activo {{ publicacionSeleccionada.estado }}</button>
-        <button @click="modalStatus = false">Borrador {{ publicacionSeleccionada.estado }}</button>
+        <p><strong>Ubicación:</strong> {{ publicacionSeleccionada.location }}</p>
+        <p><strong>Salario:</strong> {{ publicacionSeleccionada.salary_range }}</p>
+        <p><strong>Estado:</strong> {{ publicacionSeleccionada.status }}</p>
         <button @click="modalVer = false">Cerrar</button>
       </div>
     </div>
 
-    <!-- Modal Eliminar -->
     <div v-if="modalEliminar" class="modal">
       <div class="modal-content">
-        <h3>¿Esta seguro de eliminar esta publicacion?</h3>
-        <p>Cuando se elimine, se borrara todos los datos y no podra recuperarla despues.</p>
-        <p>Título: {{ publicacionSeleccionada.titulo }}</p>
-        <button @click="eliminarPublicacionConfirmada">Sí, eliminar</button>
-        <button @click="modalEliminar = false">Cancelar</button>
+        <h3>¿Estás seguro de eliminar esta publicación?</h3>
+        <p>Esta acción no se puede deshacer.</p>
+        <p><strong>Título:</strong> {{ publicacionSeleccionada.title }}</p>
+        <div class="modal-buttons">
+          <button class="confirm-delete" @click="eliminarPublicacionConfirmada">Sí, eliminar</button>
+          <button @click="modalEliminar = false">Cancelar</button>
+        </div>
       </div>
     </div>
 
-    <!-- MODAL DE CREAR / EDITAR PUBLICACIÓN -->
     <div v-if="modalEditar" class="modal">
       <div class="modal-content">
-        <h3>{{ publicacionSeleccionada ? 'Editar' : 'Nueva' }} Publicación</h3>
-
+        <h3>{{ formulario.id ? 'Editar' : 'Nueva' }} Publicación</h3>
         <form @submit.prevent="guardarPublicacion">
-          <label>Puesto de  Trabajo - Titulo</label>
-          <input v-model="formulario.titulo" type="text" required />
+          <label>Título del Puesto:</label>
+          <input v-model="formulario.title" type="text" required />
 
-
-          <label>Descripción del Trabajo:</label>
-          <textarea v-model="formulario.descripcion"></textarea>
-
-          <label>Requisitos:</label>
-          <textarea v-model="formulario.requirements"></textarea>
+          <label>Descripción:</label>
+          <textarea v-model="formulario.description" rows="4"></textarea>
 
           <label>Requisitos:</label>
-          <textarea v-model="formulario.requirements"></textarea>
+          <textarea v-model="formulario.requirements" rows="4"></textarea>
 
-          <label>Propuesta Economica:</label>
-          <textarea v-model="formulario.salary_range"></textarea>
+          <label>Ubicación:</label>
+          <input v-model="formulario.location" type="text" />
 
+          <label>Rango Salarial:</label>
+          <input v-model="formulario.salary_range" type="text" />
 
-          <p>Estado de la Publicacion</p>
-          <button @click="modalStatus = false">Activo {{ publicacionSeleccionada.estado }}</button>
-          <button @click="modalStatus = false">Borrador {{ publicacionSeleccionada.estado }}</button>
+          <label>Estado:</label>
+          <select v-model="formulario.status">
+            <option value="Activa">Activa</option>
+            <option value="Borrador">Borrador</option>
+          </select>
 
           <div class="modal-buttons">
             <button type="submit">Guardar</button>
@@ -258,221 +282,315 @@ export default {
         </form>
       </div>
     </div>
-    <ResultComponent />
-
   </div>
 </template>
 
 <style scoped>
 .reclutador-publicaciones {
-  padding: 20px;
-  font-family: Arial, sans-serif;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1200px;
+  margin: auto;
 }
 
-.search-filter {
-  margin-bottom: 15px;
+h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.top-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
 .search-filter input {
-  padding: 8px;
-  width: 250px;
-  margin-right: 10px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 15px;
-}
-
-th, td {
-  padding: 10px;
+  padding: 0.75rem;
+  width: 300px;
   border: 1px solid #ccc;
-  text-align: left;
-}
-
-th {
-  background-color: #f4f4f4;
-}
-
-button {
-  padding: 6px 12px;
-  margin: 0 3px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button.ver {
-  background-color: #3498db;
-  color: white;
-}
-
-button.editar {
-  background-color: #2ea40e;
-  color: white;
-}
-
-button.Eliminar {
-  background-color: #808080;
-  color: white;
-}
-
-.button-new-publication {
-  text-align: right;
-  margin-top: 20px;
-  margin-bottom: 20px;
-
+  border-radius: 8px;
+  font-size: 1rem;
 }
 
 .new-publication {
-  background-color: #2ecc71;
+  background-color: #4364ab;
+  color: white;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-weight: 600;
+  margin-top: 3rem;
+  gap: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 200px;
+  margin-left: auto;
+}
+.new-publication:hover {
+  background-color: #218588;
+}
+
+.publication-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.header-cell, .data-cell {
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.header-cell {
+  background-color: #b6e3a9;
+  color: #004d40;
+  font-weight: 600;
+}
+.header-cell:first-child {
+  background-color: #c8e6c9;
+}
+
+.data-cell {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+}
+
+.no-data-cell {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: white;
+  min-width: 80px;
+}
+.status-active {
+  background-color: #28a745;
+}
+.status-draft {
+  background-color: #6c757d;
+}
+
+.acciones {
+  gap: 8px;
+}
+.acciones button {
+  margin-right: 5px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: opacity 0.2s;
   color: white;
 }
+.acciones button:hover {
+  opacity: 0.8;
+}
+.ver { background-color: #2e629a; }
+.editar { background-color: #78c701; color: #1f2921; }
+.eliminar { background-color: #626262; }
 
 .modal {
   position: fixed;
+  z-index: 1000;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .modal-content {
-  background: black;
-  padding: 25px;
-  border-radius: 10px;
-  min-width: 300px;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  position: relative;
+  animation: fadeIn 0.3s ease;
 }
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.modal-content p {
+  margin-bottom: 0.8rem;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.modal-content p strong {
+  color: #333;
+}
+.modal-content button {
+  background-color: #4364ab;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.2s ease;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.modal-content button:hover {
+  background-color: #2e629a;
+}
+
+.modal-content h3 {
+  color: #d9534f;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.modal-content p {
+  text-align: center;
+  color: #666;
+  font-size: 0.95rem;
+}
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 1.5rem;
+}
+.modal-buttons .confirm-delete {
+  background-color: #d9534f;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+.modal-buttons .confirm-delete:hover {
+  background-color: #c9302c;
+}
+.modal-buttons button:not(.confirm-delete) {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+.modal-buttons button:not(.confirm-delete):hover {
+  background-color: #5a6268;
+}
+
 form {
   display: flex;
   flex-direction: column;
 }
-
 form label {
-  margin-top: 10px;
-  font-weight: bold;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+  color: #333;
 }
-
-form input, form select, form textarea {
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-th, td {
-  border: 8px solid white;
-  padding: 8px;
-  text-align: center;
-}
-
-th {
-  background-color: #8ce397;
-}
-td{
-  background-color: #eaeaea;
-}
-
-.ver, .editar, .Eliminar{
-  margin: 0 4px;
-  padding: 6px 12px;
-  border: none;
-  cursor: pointer;
-  border-radius: 13px;
-  font-weight: bold;
-}
- .new-publication {
-   margin-top: 1rem;
-   padding: 6px 12px;
-   border: none;
-   cursor: pointer;
-   border-radius: 8px;
-   font-weight: bold;
-   justify-content: center;
- }
-
-  .ver { background-color: #2196F3; color: white; }
-.editar { background-color: #FFC107; color: black; }
-.Eliminar { background-color: #f44336; color: white; }
-.new-publication { background-color: #2196F3; color: white; margin-top: 1rem; }
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  width: 400px;
-  max-width: 90%;
-}
-
-.modal-content h3 {
+form input,
+form select,
+form textarea {
+  padding: 0.8rem;
   margin-bottom: 1rem;
-}
-
-.modal-content label {
-  display: block;
-  margin: 8px 0 4px;
-}
-
-.modal-content input,
-.modal-content textarea,
-.modal-content select {
+  border: 1px solid #ced4da;
+  border-radius: 8px;
   width: 100%;
-  padding: 6px;
-  margin-bottom: 10px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
 }
-
+form input:focus,
+form select:focus,
+form textarea:focus {
+  border-color: #4364ab;
+  outline: none;
+}
 .modal-buttons {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-}
-
-.paginacion {
-  display: flex;
-  justify-content: center;
+  gap: 12px;
   margin-top: 1rem;
-  gap: 5px;
 }
-
-.paginacion button {
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  background-color: white;
+.modal-buttons button[type="submit"] {
+  background-color: #78c701;
+  color: #1f2921;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
   cursor: pointer;
-  border-radius: 4px;
-}
-
-.paginacion button.activa {
-  background-color: #3498db;
-  color: white;
   font-weight: bold;
 }
+.modal-buttons button[type="submit"]:hover {
+  background-color: #5fa300;
+}
+.modal-buttons button[type="button"] {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+.modal-buttons button[type="button"]:hover {
+  background-color: #5a6268;
+}
 
-.paginacion button:disabled {
-  opacity: 0.5;
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  gap: 8px;
+}
+.pagination button {
+  padding: 8px 14px;
+  border: 1px solid #dee2e6;
+  background-color: white;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.pagination button.activa {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+.pagination button:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 
 </style>

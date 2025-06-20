@@ -1,631 +1,225 @@
 <script>
 
-import ResultComponent from "../../reclutador/components/Result.component.vue";
-import {Publication} from "../../reclutador/model/Publication.entity.js";
-import {
-  addPublication,
-  deletePublication,
-  getAllPublications,
-  updatePublication
-} from "../../reclutador/services/Publication.service.js";
+
+import {getMyApplicationsData, withdrawApplication} from "../../reclutador/services/Application.service.js";
 
 export default {
-  name: "Postulaciones",
-  components: {
-    ResultComponent
-  },
+  name: "MisPostulaciones",
   data() {
     return {
-      publicaciones: [],
+      // Asumimos que el ID del usuario logueado es '1'. En una app real,
+      // esto vendría de un state manager (Vuex/Pinia) o del local storage.
+      currentUserId: '1',
+      misPostulaciones: [],
       filtroTitulo: '',
+      // Para el futuro modal de "Ver detalles"
+      postulacionSeleccionada: null,
       modalVer: false,
-      modalEditar: false,
-      modalEliminar: false,
-      publicacionSeleccionada: null,
-      titulo: '',
-      estado: 'Abierta',
-      descripcion: '',
-
-      formulario: {},
-      paginaActual: 1,
-      publicacionesPorPagina: 5,
     };
   },
   computed: {
-    Publication() {
-      return Publication
-    },
-    publicacionesFiltradas() {
-      if (!this.filtroTitulo) return this.publicaciones;
-      return this.publicaciones.filter(pub =>
-          pub.titulo.toLowerCase().includes(this.filtroTitulo.toLowerCase())
+    // Filtramos las postulaciones mostradas según el campo de búsqueda
+    postulacionesFiltradas() {
+      if (!this.filtroTitulo) {
+        return this.misPostulaciones;
+      }
+      return this.misPostulaciones.filter(postulacion =>
+          postulacion.title.toLowerCase().includes(this.filtroTitulo.toLowerCase())
       );
     },
-    publicacionesFiltradasMostradas() {
-      const inicio = (this.paginaActual - 1) * this.publicacionesPorPagina;
-      const fin = inicio + this.publicacionesPorPagina;
-      return this.publicacionesFiltradas.slice(inicio, fin);
-    },
-    totalPaginas() {
-      return Math.ceil(this.publicacionesFiltradas.length / this.publicacionesPorPagina);
-    },
-    paginasVisibles() {
-      const total = this.totalPaginas;
-      const actual = this.paginaActual;
-      let inicio = Math.max(actual - 2, 1);
-      let fin = Math.min(inicio + 4, total);
+  },
+  methods: {
+    async cargarMisPostulaciones() {
+      try {
+        const [myAppsResponse, jobOffersResponse, messagesResponse] = await getMyApplicationsData(this.currentUserId);
 
-      if (fin - inicio < 4) {
-        inicio = Math.max(fin - 4, 1);
-      }
+        const myApplications = myAppsResponse.data;
+        const allJobOffers = jobOffersResponse.data;
+        const allMessages = messagesResponse.data;
 
-      const paginas = [];
-      for (let i = inicio; i <= fin; i++) {
-        paginas.push(i);
+        const dataParaLaTabla = myApplications.map(application => {
+          // AQUÍ ESTÁ LA CORRECCIÓN
+          const jobOffer = allJobOffers.find(offer => String(offer.id) === String(application.job_offer_id));
+
+          const messageCount = allMessages.filter(msg => String(msg.application_id) === String(application.id)).length;
+
+          return {
+            applicationId: application.id,
+            jobOfferId: application.job_offer_id,
+            title: jobOffer ? jobOffer.title : 'Oferta no encontrada',
+            resultado: application.status,
+            messageCount: messageCount,
+            description: jobOffer ? jobOffer.description : ''
+          };
+        });
+
+        this.misPostulaciones = dataParaLaTabla;
+      } catch (error) {
+        console.error("Error al cargar mis postulaciones:", error);
+        alert("No se pudieron cargar tus postulaciones.");
       }
-      return paginas;
+    },
+
+    async eliminarPostulacion(applicationId) {
+      if (!confirm("¿Estás seguro de que quieres retirar tu postulación?")) {
+        return;
+      }
+      try {
+        await withdrawApplication(applicationId);
+        // Eliminamos la postulación de la lista local para actualizar la UI al instante
+        this.misPostulaciones = this.misPostulaciones.filter(p => p.applicationId !== applicationId);
+        alert("Postulación retirada exitosamente.");
+      } catch (error) {
+        console.error("Error al retirar la postulación:", error);
+        alert("No se pudo retirar la postulación.");
+      }
+    },
+
+    abrirModalVer(postulacion) {
+      this.postulacionSeleccionada = postulacion;
+      this.modalVer = true;
     }
   },
-
-  methods: {
-    async cargarPublicaciones() {
-      const res = await getAllPublications();
-      this.publicaciones = res.data;
-    },
-    cerrarModalEditar() {
-      this.modalEditar = false;
-    },
-    async guardarPublicacion() {
-      try {
-        if (this.publicacionSeleccionada) {
-          await updatePublication(this.publicacionSeleccionada.id, this.formulario);
-          alert('¡Publicación actualizada exitosamente!');
-        } else {
-          await addPublication(this.formulario);
-          alert('¡Publicación creada exitosamente!');
-        }
-        this.modalEditar = false;
-        await this.cargarPublicaciones();
-      } catch (error) {
-        alert('Error al guardar la publicación.');
-        console.error(error);
-      }
-    },
-    cambiarPagina(nuevaPagina) {
-      if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
-        this.paginaActual = nuevaPagina;
-      }
-    },
-    abrirModalV(publicacion) {
-      this.publicacionSeleccionada = publicacion;
-      this.modalVer = true;
-    },
-    abrirModalEd(publicacion) {
-      this.publicacionSeleccionada = publicacion;
-      this.formulario = {
-        titulo: publicacion.titulo,
-        estado: publicacion.estado,
-        descripcion: publicacion.descripcion
-      };
-      this.modalEditar = true;
-    },
-    abrirModalEl(publicacion) {
-      this.publicacionSeleccionada = publicacion;
-      this.modalEliminar = true;
-    },
-    async eliminarPublicacionConfirmada() {
-      try {
-        await deletePublication(this.publicacionSeleccionada.id);
-        this.modalEliminar = false;
-        await this.cargarPublicaciones();
-        alert("Publicación eliminada exitosamente.");
-      } catch (error) {
-        alert("Error al eliminar la publicación.");
-        console.error(error);
-      }
-    },
-
-    abrirModalNuevaPublicacion() {
-      this.publicacionSeleccionada = null;
-      this.formulario = {
-        titulo: '',
-        estado: 'Abierta',
-        descripcion: ''
-      };
-      this.modalEditar = true;
-    },
-    filtrarPublicaciones() {
-      // Ya se aplica con v-model + computed
-    },
-
-
-  },
   mounted() {
-    this.cargarPublicaciones();
+    this.cargarMisPostulaciones();
   }
-}
+};
 </script>
 
 <template>
-  <div class="reclutador-publicaciones">
-    <h2>Postulaciones</h2>
-    <p>Mis Postulaciones</p>
-    <div class="search-filter">
+  <div class="mis-postulaciones-container">
+    <h1>Postulaciones</h1>
+    <p class="subtitle">Mis Postulaciones</p>
+
+    <div class="controls">
       <input
           v-model="filtroTitulo"
           type="text"
-          placeholder="Buscar por titulo..."
+          placeholder="Buscar por título..."
+          class="search-input"
       />
-      <button @click="filtrarPublicaciones">Filtrar</button>
     </div>
 
-    <!-- Vista de tabla para desktop -->
-    <div class="desktop-table">
-      <table>
-        <thead>
-        <tr>
-          <th>Titulo</th>
-          <th>Resultado</th>
-          <th>Mensaje</th>
-          <th>Acciones</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for ="(publicacion, index) in publicacionesFiltradasMostradas" :key="index">
-          <td>{{ publicacion.titulo }}</td>
-          <td>{{ publicacion.estado }}</td>
-          <td>{{ publicacion.aplicaciones }}</td>
-          <td>
-            <button class="ver" @click="abrirModalV(publicacion)">Ver </button>
-            <button class="editar" @click="abrirModalEd(publicacion)">Editar</button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
+    <div class="postulaciones-table">
+      <div class="table-header">Título</div>
+      <div class="table-header">Resultado</div>
+      <div class="table-header">Mensajes</div>
+      <div class="table-header">Acciones</div>
 
-    <!-- Vista de cards para móvil -->
-    <div class="mobile-cards">
-      <div v-for="(publicacion, index) in publicacionesFiltradasMostradas" :key="index" class="card">
-        <div class="card-header">
-          <h3>{{ publicacion.titulo }}</h3>
-          <span class="estado">{{ publicacion.estado }}</span>
-        </div>
-        <div class="card-body">
-          <p><strong>Mensaje:</strong> {{ publicacion.aplicaciones }}</p>
-        </div>
-        <div class="card-actions">
-          <button class="ver" @click="abrirModalV(publicacion)">Ver</button>
-          <button class="editar" @click="abrirModalEd(publicacion)">Editar</button>
-        </div>
+      <template v-if="postulacionesFiltradas.length > 0">
+        <template v-for="postulacion in postulacionesFiltradas" :key="postulacion.applicationId">
+          <div class="table-cell">{{ postulacion.title }}</div>
+          <div class="table-cell">
+            <span class="status-badge">{{ postulacion.resultado }}</span>
+          </div>
+          <div class="table-cell">{{ postulacion.messageCount }}</div>
+          <div class="table-cell actions">
+            <button class="action-btn ver" @click="abrirModalVer(postulacion)">Ver</button>
+            <button class="action-btn eliminar" @click="eliminarPostulacion(postulacion.applicationId)">Eliminar</button>
+          </div>
+        </template>
+      </template>
+      <div v-else class="no-data">
+        No has realizado ninguna postulación.
       </div>
     </div>
 
-    <div class="paginacion">
-      <button @click="cambiarPagina(paginaActual - 1)" :disabled="paginaActual === 1">Anterior</button>
-
-      <button
-          v-for="n in paginasVisibles"
-          :key="n"
-          :class="{ activa: paginaActual === n }"
-          @click="cambiarPagina(n)"
-      >{{ n }}</button>
-
-      <button @click="cambiarPagina(paginaActual + 1)" :disabled="paginaActual === totalPaginas">Siguiente</button>
-    </div>
-
-    <div class="button-new-publication">
-      <button class="new-publication" @click="abrirModalNuevaPublicacion">Nueva Publicación</button>
-    </div>
-
-    <!-- Modal Ver -->
     <div v-if="modalVer" class="modal">
       <div class="modal-content">
-        <h3>Detalle de Publicación</h3>
-        <p><strong>Puesto de Trabajo - Título:</strong> {{ publicacionSeleccionada.titulo }}</p>
-        <p><strong>Descripcion:</strong> {{ publicacionSeleccionada.descripcion}}</p>
-        <p><strong>Requisitos:</strong> {{ publicacionSeleccionada.requirements }}</p>
-        <p><strong>Requerimiento:</strong> {{ publicacionSeleccionada.requirements }}</p>
-        <p><strong>Propuesta Economica:</strong> {{ publicacionSeleccionada.salary_range }}</p>
-        <p>Estado de la Publicacion</p>
-        <button @click="modalStatus = false">Activo {{ publicacionSeleccionada.estado }}</button>
-        <button @click="modalStatus = false">Borrador {{ publicacionSeleccionada.estado }}</button>
+        <h3>{{ postulacionSeleccionada.title }}</h3>
+        <p>{{ postulacionSeleccionada.description }}</p>
         <button @click="modalVer = false">Cerrar</button>
       </div>
     </div>
 
-    <div v-if="modalEliminar" class="modal">
-      <div class="modal-content">
-        <h3>¿Esta seguro de eliminar esta publicacion?</h3>
-        <p>Cuando se elimine, se borrara todos los datos y no podra recuperarla despues.</p>
-        <p>Título: {{ publicacionSeleccionada.titulo }}</p>
-        <button @click="eliminarPublicacionConfirmada">Sí, eliminar</button>
-        <button @click="modalEliminar = false">Cancelar</button>
-      </div>
-    </div>
   </div>
 </template>
 
 <style scoped>
-.reclutador-publicaciones {
-  padding: 20px;
+.mis-postulaciones-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 2rem;
   font-family: Arial, sans-serif;
 }
-
-.search-filter {
-  margin-bottom: 15px;
+.subtitle {
+  color: #555;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
 }
-
-.search-filter input {
-  padding: 8px;
-  width: 250px;
-  margin-right: 10px;
+.controls {
+  margin-bottom: 2rem;
 }
-
-/* Vista de cards para móvil - oculta por defecto */
-.mobile-cards {
-  display: none;
-}
-
-.desktop-table {
-  display: block;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 15px;
-}
-
-th, td {
-  padding: 10px;
-  border: 1px solid #ccc;
-  text-align: left;
-}
-
-th {
-  background-color: #f4f4f4;
-}
-
-button {
-  padding: 6px 12px;
-  margin: 0 3px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button.ver {
-  background-color: #3498db;
-  color: white;
-}
-
-button.editar {
-  background-color: #2ea40e;
-  color: white;
-}
-
-button.Eliminar {
-  background-color: #808080;
-  color: white;
-}
-
-.button-new-publication {
-  text-align: right;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-.new-publication {
-  background-color: #2ecc71;
-  color: white;
-}
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 25px;
-  border-radius: 10px;
-  min-width: 300px;
-  max-width: 90%;
-  max-height: 90%;
-  overflow-y: auto;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-form label {
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-form input, form select, form textarea {
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-th, td {
-  border: 8px solid white;
-  padding: 8px;
-  text-align: center;
-}
-
-th {
-  background-color: #8ce397;
-}
-
-td {
-  background-color: #eaeaea;
-}
-
-.ver, .editar, .Eliminar {
-  margin: 0 4px;
-  padding: 6px 12px;
-  border: none;
-  cursor: pointer;
-  border-radius: 13px;
-  font-weight: bold;
-}
-
-.new-publication {
-  margin-top: 1rem;
-  padding: 6px 12px;
-  border: none;
-  cursor: pointer;
+.search-input {
+  padding: 0.8rem;
   border-radius: 8px;
-  font-weight: bold;
-  justify-content: center;
-}
-
-.ver { background-color: #2196F3; color: white; }
-.editar { background-color: #FFC107; color: black; }
-.Eliminar { background-color: #f44336; color: white; }
-.new-publication { background-color: #2196F3; color: white; margin-top: 1rem; }
-
-.modal-content h3 {
-  margin-bottom: 1rem;
-}
-
-.modal-content label {
-  display: block;
-  margin: 8px 0 4px;
-}
-
-.modal-content input,
-.modal-content textarea,
-.modal-content select {
-  width: 100%;
-  padding: 6px;
-  margin-bottom: 10px;
-}
-
-.modal-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.paginacion {
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-  gap: 5px;
-}
-
-.paginacion button {
-  padding: 6px 12px;
   border: 1px solid #ccc;
-  background-color: white;
-  cursor: pointer;
-  border-radius: 4px;
+  width: 300px;
 }
-
-.paginacion button.activa {
-  background-color: #3498db;
-  color: white;
-  font-weight: bold;
+.postulaciones-table {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr 1fr 1.5fr; /* Ajusta las proporciones de las columnas */
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
-
-.paginacion button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Estilos para las cards de móvil */
-.card {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  padding: 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-
-.card-header h3 {
-  margin: 0;
-  font-size: 16px;
+.table-header {
+  background-color: #b6e3a9; /* Tono verde claro */
   color: #333;
-  flex: 1;
-  min-width: 0;
+  font-weight: 600;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 8px;
 }
-
-.estado {
-  background-color: #8ce397;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
-  margin-left: 10px;
-}
-
-.card-body {
-  margin-bottom: 15px;
-}
-
-.card-body p {
-  margin: 5px 0;
-  font-size: 14px;
-  color: #666;
-}
-
-.card-actions {
+.table-cell {
+  background-color: #f8f8f8;
+  padding: 1rem;
+  text-align: center;
   display: flex;
-  gap: 8px;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+.actions {
+  gap: 0.5rem;
+}
+.action-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.action-btn:hover {
+  transform: translateY(-2px);
+}
+.ver {
+  background-color: #2e629a;
+}
+.eliminar {
+  background-color: #626262;
+}
+.status-badge {
+  background-color: #e0e0e0;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+.no-data {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: #888;
 }
 
-.card-actions button {
-  flex: 1;
-  max-width: 80px;
-  font-size: 12px;
-  padding: 8px 12px;
-}
-
-/* Media queries para responsive */
-@media (max-width: 768px) {
-  .reclutador-publicaciones {
-    padding: 15px;
-  }
-
-  .search-filter {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .search-filter input {
-    width: 100%;
-    margin-right: 0;
-  }
-
-  .search-filter button {
-    width: 100%;
-    padding: 10px;
-  }
-
-  /* Ocultar tabla en móvil */
-  .desktop-table {
-    display: none;
-  }
-
-  /* Mostrar cards en móvil */
-  .mobile-cards {
-    display: block;
-  }
-
-  .button-new-publication {
-    text-align: center;
-    margin: 20px 0;
-  }
-
-  .new-publication {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-  }
-
-  /* Paginación responsive */
-  .paginacion {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .paginacion button {
-    min-width: 40px;
-    padding: 8px 12px;
-  }
-
-  /* Modal responsive */
-  .modal-content {
-    margin: 20px;
-    padding: 20px;
-    min-width: unset;
-    width: calc(100% - 40px);
-  }
-
-  .modal-content h3 {
-    font-size: 18px;
-  }
-
-  .modal-content p {
-    font-size: 14px;
-    line-height: 1.4;
-  }
-
-  .modal-content button {
-    width: 100%;
-    margin: 5px 0;
-    padding: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .reclutador-publicaciones {
-    padding: 10px;
-  }
-
-  .card {
-    padding: 12px;
-  }
-
-  .card-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .card-header h3 {
-    font-size: 14px;
-  }
-
-  .estado {
-    align-self: flex-start;
-    margin-left: 0;
-  }
-
-  .card-actions {
-    flex-direction: column;
-  }
-
-  .card-actions button {
-    max-width: none;
-    width: 100%;
-  }
-
-  .paginacion button {
-    padding: 6px 8px;
-    font-size: 12px;
-  }
-}
+/* Estilos de Modal genéricos */
+.modal { position: fixed; z-index: 1000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
+.modal-content { background: #ffffff; padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px; }
+.modal-content h3 { margin-top: 0; }
+.modal-content button { background-color: #4364ab; color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; margin-top: 1rem; }
 </style>

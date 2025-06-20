@@ -1,17 +1,25 @@
-
-
 import axios from 'axios';
 
-const endpoint = '/api/publications';
+const API_URL = 'http://localhost:3000';
 
-export const getAllPublications = () => axios.get(endpoint);
+const jobOffersEndpoint = `${API_URL}/job_offers`;
+const applicationsEndpoint = `${API_URL}/applications`;
 
-export const getPublicationById = (id) => axios.get(`${endpoint}/${id}`);
+export const getAllPublications = () => {
+    return Promise.all([
+        axios.get(jobOffersEndpoint),
+        axios.get(applicationsEndpoint)
+    ]);
+};
 
-export const addPublication = (publication) => axios.post(endpoint, publication);
 
-export const updatePublication = (id, publication) => axios.put(`${endpoint}/${id}`, publication);
-
-export const deletePublication = (id) => axios.delete(`${endpoint}/${id}`);
+export const getPublicationById = (id) => axios.get(`${jobOffersEndpoint}/${id}`);
 
 
+export const addPublication = (publication) => axios.post(jobOffersEndpoint, publication);
+
+
+export const updatePublication = (id, publication) => axios.put(`${jobOffersEndpoint}/${id}`, publication);
+
+
+export const deletePublication = (id) => axios.delete(`${jobOffersEndpoint}/${id}`);

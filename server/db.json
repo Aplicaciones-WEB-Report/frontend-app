@@ -1,14 +1,14 @@
 {
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "email": "jane.doe@example.com",
       "password": "hashedpassword123",
       "role": "candidate",
       "created_at": "2024-01-15T09:00:00Z"
     },
     {
-      "id": 2,
+      "id": "2",
       "email": "employer1@company.com",
       "password": "hashedpassword456",
       "role": "employer",
@@ -17,7 +17,7 @@
   ],
   "candidate_profiles": [
     {
-      "id": 1,
+      "id": "1",
       "user_id": 1,
       "name": "Jane Doe",
       "publicationNumber": "Publicación 1",
@@ -25,7 +25,7 @@
       "posible": false
     },
     {
-      "id": 2,
+      "id": "2",
       "user_id": 2,
       "name": "Carlos León",
       "publicationNumber": "Publicación 2",
@@ -33,7 +33,7 @@
       "posible": true
     },
     {
-      "id": 3,
+      "id": "3",
       "user_id": 3,
       "name": "Lucía Torres",
       "publicationNumber": "Publicación 3",
@@ -41,7 +41,7 @@
       "posible": false
     },
     {
-      "id": 4,
+      "id": "4",
       "user_id": 4,
       "name": "Pedro Gómez",
       "publicationNumber": "Publicación 4",
@@ -49,7 +49,7 @@
       "posible": true
     },
     {
-      "id": 5,
+      "id": "5",
       "user_id": 5,
       "name": "María Fernández",
       "publicationNumber": "Publicación 5",
@@ -57,7 +57,7 @@
       "posible": true
     },
     {
-      "id": 6,
+      "id": "6",
       "user_id": 6,
       "name": "José Salazar",
       "publicationNumber": "Publicación 6",
@@ -67,7 +67,7 @@
   ],
   "employer_profiles": [
     {
-      "id": 1,
+      "id": "1",
       "user_id": 2,
       "company_name": "TechCorp",
       "description": "A leading tech solutions provider.",
@@ -77,19 +77,21 @@
   ],
   "job_offers": [
     {
-      "id": 1,
+      "id": "1",
       "employer_id": 1,
       "title": "Junior Data Analyst",
       "description": "Analyze datasets to support business decisions.",
-      "requirements": "Bachelor's degree in related field, SQL knowledge.",
+      "requirements": "Bachelor's degree in related field, SQL knowledge",
       "location": "Remote",
       "salary_range": "2500-3500",
-      "created_at": "2024-02-01T08:00:00Z"
+      "status": "Activa",
+      "created_at": "2024-02-01T08:00:00Z",
+      "applicationCount": 0
     }
   ],
   "applications": [
     {
-      "id": 1,
+      "id": "1",
       "job_offer_id": 1,
       "candidate_id": 1,
       "application_date": "2024-02-05T10:15:00Z",
@@ -98,7 +100,8 @@
   ],
   "messages": [
     {
-      "id": 1,
+      "id": "1",
+      "application_id": 1,
       "sender_id": 1,
       "receiver_id": 2,
       "content": "Hello, I’m interested in the Data Analyst position.",
@@ -107,7 +110,7 @@
   ],
   "interviews": [
     {
-      "id": 1,
+      "id": "1",
       "employer_id": 1,
       "candidate_id": 1,
       "job_offer_id": 1,
@@ -120,7 +123,7 @@
   ],
   "evaluations": [
     {
-      "id": 1,
+      "id": "1",
       "interview_id": 1,
       "candidate_id": 1,
       "rating": 4.5,
@@ -130,7 +133,7 @@
   ],
   "membership_plans": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Basic Plan",
       "description": "Access to up to 5 job postings.",
       "price": 49.99,
@@ -139,7 +142,7 @@
   ],
   "employer_memberships": [
     {
-      "id": 1,
+      "id": "1",
       "employer_id": 1,
       "membership_plan_id": 1,
       "start_date": "2024-01-25T00:00:00Z",

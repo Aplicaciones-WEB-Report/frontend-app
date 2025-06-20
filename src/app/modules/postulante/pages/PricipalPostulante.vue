@@ -1,6 +1,7 @@
 <script>
 import Card from "primevue/card";
 import Chart from "primevue/chart";
+import {getNotificationsData} from "../../reclutador/services/Notification.service.js";
 
 export default {
   name: "PanelPricipal",
@@ -11,18 +12,6 @@ export default {
         { titulo: "Postulación 1", solicitudes: 3 },
         { titulo: "Postulación 2", solicitudes: 7 },
         { titulo: "Postulación 3", solicitudes: 8 },
-      ],
-      mensajes: [
-        {
-          titulo: "Publicación 1",
-          contenido: "Hola postulante, has sido aceptado en el puesto de trabajo, Felicidades.",
-          estado: "aceptado"
-        },
-        {
-          titulo: "Publicación 2",
-          contenido: "El proceso de reclutamiento demorara más de lo esperado. Sigue esperando respuesta por favor.",
-          estado: "proceso"
-        }
       ],
       chartData1: {
         labels: ['Publicación 1', 'Publicación 2', 'Publicación 3', 'Publicación 4'],
@@ -44,8 +33,56 @@ export default {
             beginAtZero: true
           }
         }
-      }
+      },
+
+      notifications: [],
+      isLoadingNotifications: true,
+      currentUserId: '1',
     };
+  },
+  methods: {
+    async cargarNotificaciones() {
+      this.isLoadingNotifications = true;
+      try {
+        const [messagesResponse, applicationsResponse, jobOffersResponse] = await getNotificationsData();
+
+        const allMessages = messagesResponse.data;
+        const allApplications = applicationsResponse.data;
+        const allJobOffers = jobOffersResponse.data;
+
+        const userMessages = allMessages.filter(msg =>
+            String(msg.sender_id) === String(this.currentUserId) ||
+            String(msg.receiver_id) === String(this.currentUserId)
+        );
+
+        const enrichedNotifications = userMessages.map(message => {
+          let publicationTitle = 'Conversación General';
+          const application = allApplications.find(app => String(app.id) === String(message.application_id));
+          if (application) {
+            const jobOffer = allJobOffers.find(offer => String(offer.id) === String(application.job_offer_id));
+            if (jobOffer) {
+              publicationTitle = jobOffer.title;
+            }
+          }
+          return {
+            id: message.id,
+            publicationTitle: publicationTitle,
+            content: message.content,
+            sent_at: message.sent_at
+          };
+        });
+
+        this.notifications = enrichedNotifications.sort((a, b) => new Date(b.sent_at) - new Date(a.sent_at));
+
+      } catch (error) {
+        console.error("Error al cargar las notificaciones:", error);
+      } finally {
+        this.isLoadingNotifications = false;
+      }
+    }
+  },
+  mounted() {
+    this.cargarNotificaciones();
   }
 }
 </script>
@@ -69,29 +106,34 @@ export default {
         </Card>
       </div>
     </div>
+    <div class="inbox-section">
+      <div class="header-inbox">
+        <h2>Bandeja de Entrada</h2>
+      </div>
 
-    <div class="header mt-5" style="margin-top: 30px;">
-      <h2>Bandeja de Entrada</h2>
-    </div>
-    <div class="grid">
-      <div v-for="(msg, index) in mensajes" :key="index" class="col-12 md:col-6 lg:col-6">
-        <Card class="card-mensaje">
-          <template #title>
-            <span class="titulo-mensaje">{{ msg.titulo }}</span>
-            <span :class="['estado-badge', msg.estado]">
-              {{ msg.estado === 'aceptado' ? 'Aceptado' : 'En Proceso' }}
-            </span>
-          </template>
-          <template #content>
-            <p class="contenido-mensaje">{{ msg.contenido }}</p>
-          </template>
-        </Card>
+      <div v-if="isLoadingNotifications" class="loading-message">
+        Cargando mensajes...
+      </div>
+
+      <div v-else-if="notifications.length > 0" class="notifications-list">
+        <div v-for="notification in notifications" :key="notification.id" class="notification-item">
+          <div class="avatar"></div>
+          <div class="content-inbox">
+            <p class="publication-title">{{ notification.publicationTitle }}</p>
+            <p class="message-text">{{ notification.content }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div v-else class="no-notifications">
+        No tienes mensajes nuevos.
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+
 .dashboard {
   margin-bottom: 20px;
   font-size: 10px;
@@ -142,81 +184,69 @@ export default {
   color: #333;
 }
 
-/* Estilos para la bandeja de entrada */
-.card-mensaje {
-  background-color: #f0f7ff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  padding: 15px;
+
+.inbox-section {
+  margin-top: 40px;
+}
+.header-inbox {
+  background-color: #68c25c;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
   margin-bottom: 20px;
 }
-.titulo-mensaje {
-  font-weight: 600;
-  font-size: 16px;
-  color: #011a2d;
-  display: block;
-  margin-bottom: 10px;
+.header-inbox h2 {
+  text-align: center;
+  margin: 0;
+  margin-top: -4px;
 }
-.contenido-mensaje {
-  color: #333;
-  font-size: 14px;
-  line-height: 1.5;
-}
-.estado-badge {
-  padding: 4px 10px;
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #fff;
+  padding: 20px;
   border-radius: 12px;
-  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.notification-item:last-child {
+  border-bottom: none;
+}
+.avatar {
+  min-width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #d1d5db;
+  margin-right: 1rem;
+}
+.content-inbox {
+  display: flex;
+  flex-direction: column;
+}
+.publication-title {
   font-weight: 600;
-  color: white;
-  float: right;
+  color: #1f2937;
+  margin: 0 0 0.25rem 0;
+  font-size: 14px;
 }
-.estado-badge.aceptado {
-  background-color: #68c25c;
+.message-text {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.5;
+  font-size: 13px;
 }
-.estado-badge.proceso {
-  background-color: #ffb74d;
-}
-
-/* Responsividad */
-@media screen and (max-width: 768px) {
-  .cards {
-    flex-direction: column;
-  }
-  .card {
-    margin-bottom: 15px;
-  }
-}
-@media screen and (max-width: 768px) {
-  .card {
-    margin-bottom: 15px;
-  }
-}
-@media screen and (max-width: 768px) {
-  .header h2 {
-    font-size: 1rem; /* Tamaño más pequeño en móviles */
-    padding: 0 10px; /* Menos padding en móviles */
-    white-space: nowrap; /* Evita que el texto se divida en dos líneas */
-    overflow: hidden;
-    text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es muy largo */
-  }
-
-  .header {
-    height: auto; /* Altura automática para móviles */
-    padding: 10px 5px; /* Padding reducido en móviles */
-  }
-
-  .cards {
-    flex-direction: column;
-  }
-
-  .card {
-    margin-bottom: 15px;
-  }
-}
-
-@media screen and (min-width: 769px) and (max-width: 1024px) {
-  .header h2 {
-    font-size: 1.1rem; /* Tamaño intermedio para tablets */
-  }
+.loading-message, .no-notifications {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+  font-size: 1.1rem;
+  background-color: #fff;
+  border-radius: 12px;
 }
 </style>
