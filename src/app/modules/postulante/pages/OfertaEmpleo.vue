@@ -1,7 +1,7 @@
 <script>
 
 
-import {applyToJob, getJobBoardData} from "../../reclutador/services/JobBoard.service.js";
+import {applyToJob, getJobBoardData} from "../services/JobBoard.service.js";
 
 export default {
   name: "OfertasEmpleo",

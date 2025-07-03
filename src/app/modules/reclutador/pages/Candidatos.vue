@@ -2,7 +2,7 @@
 import CandidatoFiltro from '../components/candidato/CandidatoFiltro.vue'
 import CandidatoTabla from '../components/candidato/CandidatoTabla.vue'
 import CandidatoModal from '../components/candidato/CandidatoModal.vue'
-import { CandidatoService } from '../services/candidato.service.js'
+import { CandidatoService } from '../../postulante/services/candidato.service.js'
 import { Candidato } from '../model/Candidato.entity.js'
 
 export default {

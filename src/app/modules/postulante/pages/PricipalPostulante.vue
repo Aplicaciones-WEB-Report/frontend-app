@@ -1,7 +1,7 @@
 <script>
 import Card from "primevue/card";
 import Chart from "primevue/chart";
-import {getNotificationsData} from "../../reclutador/services/Notification.service.js";
+import {getNotificationsData} from "../services/Notification.service.js";
 
 export default {
   name: "PanelPricipal",

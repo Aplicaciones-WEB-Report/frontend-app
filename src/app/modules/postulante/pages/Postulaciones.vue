@@ -1,7 +1,7 @@
 <script>
 
 
-import {getMyApplicationsData, withdrawApplication} from "../../reclutador/services/Application.service.js";
+import {getMyApplicationsData, withdrawApplication} from "../services/Application.service.js";
 
 export default {
   name: "MisPostulaciones",

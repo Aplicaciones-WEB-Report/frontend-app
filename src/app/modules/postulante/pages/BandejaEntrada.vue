@@ -1,6 +1,6 @@
 <script>
 
-import {getNotificationsData} from "../../reclutador/services/Notification.service.js";
+import {getNotificationsData} from "../services/Notification.service.js";
 
 export default {
   name: "BandejaEntrada",
