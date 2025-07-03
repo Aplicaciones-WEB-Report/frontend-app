@@ -1,5 +1,4 @@
 <script>
-// Importamos los servicios para interactuar con la API y la entidad
 import {
   getAllPublications,
   deletePublication,
@@ -18,14 +17,12 @@ export default {
       modalEditar: false,
       modalEliminar: false,
       publicacionSeleccionada: null,
-      // El objeto 'formulario' almacenará los datos del modal de creación/edición
       formulario: new Publication(),
       paginaActual: 1,
       publicacionesPorPagina: 5,
     };
   },
   computed: {
-    // Computada para filtrar las publicaciones según el input de búsqueda
     publicacionesFiltradas() {
       if (!this.filtroTitulo) {
         return this.publicaciones;
@@ -34,13 +31,11 @@ export default {
           pub.title.toLowerCase().includes(this.filtroTitulo.toLowerCase())
       );
     },
-    // Computada para manejar la paginación de los resultados filtrados
     publicacionesPaginadas() {
       const inicio = (this.paginaActual - 1) * this.publicacionesPorPagina;
       const fin = inicio + this.publicacionesPorPagina;
       return this.publicacionesFiltradas.slice(inicio, fin);
     },
-    // Computada para calcular el número total de páginas
     totalPaginas() {
       return Math.ceil(this.publicacionesFiltradas.length / this.publicacionesPorPagina);
     },
@@ -63,13 +58,11 @@ export default {
         alert("No se pudieron cargar los datos. Asegúrate de que json-server esté corriendo.");
       }
     },
-    // Lógica para guardar (crear o actualizar) una publicación
-    // Publicaciones.vue -> methods
+
 
     async guardarPublicacion() {
       try {
-        // --- LÓGICA DE ACTUALIZACIÓN (PUT) ---
-        // Esta parte sigue siendo correcta. Si hay un ID, es una actualización.
+
         if (this.formulario.id) {
           const response = await updatePublication(this.formulario.id, this.formulario);
           const publicacionActualizada = response.data;
@@ -81,20 +74,15 @@ export default {
           alert('¡Publicación actualizada exitosamente!');
 
         } else {
-          // --- LÓGICA DE CREACIÓN (POST) - CORRECCIÓN CLAVE ---
 
-          // 1. Creamos una copia del formulario para no modificar el original.
           const payload = { ...this.formulario };
 
-          // 2. **ELIMINAMOS LA PROPIEDAD 'id' DEL OBJETO A ENVIAR.**
-          //    Este es el paso más importante.
+
           delete payload.id;
 
-          // 3. Enviamos el 'payload' sin el id.
           const response = await addPublication(payload);
-          const nuevaPublicacion = response.data; // Ahora SÍ tendrá un ID generado por el servidor.
+          const nuevaPublicacion = response.data;
 
-          // 4. Actualizamos el estado local con la respuesta correcta.
           nuevaPublicacion.applicationCount = 0;
           this.publicaciones.unshift(nuevaPublicacion);
           alert('¡Publicación creada exitosamente!');
@@ -107,8 +95,7 @@ export default {
         console.error('Detalle del error:', error);
       }
     },
-    // Eliminar una publicación
-// Publicaciones.vue -> methods
+
 
     async eliminarPublicacionConfirmada() {
       if (!this.publicacionSeleccionada || !this.publicacionSeleccionada.id) {
@@ -118,14 +105,12 @@ export default {
       try {
         await deletePublication(this.publicacionSeleccionada.id);
 
-        // Actualización optimista: Eliminamos la publicación del array local
         const index = this.publicaciones.findIndex(p => p.id === this.publicacionSeleccionada.id);
         if (index !== -1) {
           this.publicaciones.splice(index, 1);
         }
 
         this.modalEliminar = false;
-        // Ya no es necesario llamar a this.cargarPublicaciones()
         alert("Publicación eliminada exitosamente.");
 
       } catch (error) {
@@ -133,14 +118,12 @@ export default {
         console.error(error);
       }
     },
-    // Abrir modales
     abrirModalVer(publicacion) {
       this.publicacionSeleccionada = publicacion;
       this.modalVer = true;
     },
     abrirModalEditar(publicacion) {
-      // **CORRECCIÓN DEFINITIVA: Usar una copia simple del objeto ({...})**
-      // Esto es más robusto y evita problemas de reactividad que pueden hacer que se pierda el ID.
+
       console.log("Abriendo modal de edición para:", publicacion);
       this.formulario = { ...publicacion };
       this.modalEditar = true;
@@ -192,22 +175,23 @@ export default {
 
       <template v-if="publicacionesPaginadas.length > 0">
         <template v-for="publicacion in publicacionesPaginadas" :key="publicacion.id">
-          <div class="data-cell">{{ publicacion.title }}</div>
-          <div class="data-cell">
-            <span :class="['status-badge', publicacion.status === 'Activa' ? 'status-active' : 'status-draft']">
-              {{ publicacion.status }}
-            </span>
+          <div class="data-cell" :data-label="'Título'">{{ publicacion.title }}</div>
+          <div class="data-cell" :data-label="'Estado'">
+    <span :class="['status-badge', publicacion.status === 'Activa' ? 'status-active' : 'status-draft']">
+      {{ publicacion.status }}
+    </span>
           </div>
-          <div class="data-cell">{{ publicacion.applicationCount }}</div>
-          <div class="data-cell acciones">
-            <button class="ver" @click="abrirModalVer(publicacion)">Ver</button>
-            <button class="editar" @click="abrirModalEditar(publicacion)">Editar</button>
-            <button class="eliminar" @click="abrirModalEliminar(publicacion)">Eliminar</button>
+          <div class="data-cell" :data-label="'Aplicaciones'">{{ publicacion.applicationCount }}</div>
+          <div class="data-cell" :data-label="'Acciones'">
+            <div class="acciones">
+              <button class="ver" @click="abrirModalVer(publicacion)">Ver</button>
+              <button class="editar" @click="abrirModalEditar(publicacion)">Editar</button>
+              <button class="eliminar" @click="abrirModalEliminar(publicacion)">Eliminar</button>
+            </div>
           </div>
         </template>
       </template>
-
-      <div v-else class="no-data-cell">
+        <div v-else class="no-data-cell">
         No hay publicaciones para mostrar.
       </div>
     </div>
@@ -303,6 +287,8 @@ h2 {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .search-filter input {
@@ -409,6 +395,7 @@ h2 {
 .editar { background-color: #78c701; color: #1f2921; }
 .eliminar { background-color: #626262; }
 
+/* MODAL STYLES */
 .modal {
   position: fixed;
   z-index: 1000;
@@ -421,7 +408,6 @@ h2 {
   align-items: center;
   justify-content: center;
 }
-
 .modal-content {
   background: #ffffff;
   padding: 2rem;
@@ -432,40 +418,6 @@ h2 {
   position: relative;
   animation: fadeIn 0.3s ease;
 }
-
-.modal-content h3 {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-  font-size: 1.4rem;
-  text-align: center;
-}
-
-.modal-content p {
-  margin-bottom: 0.8rem;
-  color: #555;
-  font-size: 0.95rem;
-  line-height: 1.4;
-}
-.modal-content p strong {
-  color: #333;
-}
-.modal-content button {
-  background-color: #4364ab;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  margin-top: 1rem;
-  transition: background-color 0.2s ease;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-.modal-content button:hover {
-  background-color: #2e629a;
-}
-
 .modal-content h3 {
   color: #d9534f;
   text-align: center;
@@ -475,6 +427,7 @@ h2 {
   text-align: center;
   color: #666;
   font-size: 0.95rem;
+  line-height: 1.4;
 }
 .modal-buttons {
   display: flex;
@@ -587,10 +540,73 @@ form textarea:focus {
   cursor: not-allowed;
 }
 
+/* ✅ Responsive Mobile */
+@media (max-width: 768px) {
+  .publication-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0.5rem;
+  }
+
+  .header-cell {
+    display: none;
+  }
+
+  .data-cell {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    border-radius: 12px;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: relative;
+  }
+
+  .data-cell::before {
+    content: attr(data-label);
+    display: block;
+    font-weight: 600;
+    color: #004d40;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .acciones {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .acciones button {
+    flex: 1 1 auto;
+    font-size: 0.85rem;
+    padding: 8px 10px;
+    white-space: nowrap;
+  }
+
+  .top-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-filter input {
+    width: 100%;
+  }
+
+  .new-publication {
+    width: 100%;
+    margin-left: 0;
+    max-width: none;
+  }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
-
-
 </style>
+
