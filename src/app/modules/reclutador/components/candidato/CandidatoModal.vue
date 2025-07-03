@@ -61,27 +61,32 @@ export default {
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* mostrar el modal más abajo */
   justify-content: center;
+  padding-top: 70px; /* espacio debajo del botón hamburguesa */
   z-index: 1000;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .modal-content {
   background: white;
-  padding: 30px;
-  width: 90%;
+  padding: 24px;
+  width: 92vw;
   max-width: 500px;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
 }
 
 .modal-label {
   font-weight: 600;
   font-size: 14px;
   color: #2d3e50;
+  margin-bottom: 6px;
 }
 
 .modal-input {
@@ -90,12 +95,22 @@ export default {
   border: 1px solid #ccc;
   background-color: #eaf0f6;
   font-size: 15px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .cv-container {
   display: flex;
+  flex-direction: column;
   gap: 10px;
-  align-items: center;
+  align-items: flex-start;
+}
+
+@media (min-width: 640px) {
+  .cv-container {
+    flex-direction: row;
+    align-items: center;
+  }
 }
 
 .descargar-btn {
@@ -106,6 +121,13 @@ export default {
   text-decoration: none;
   font-weight: 600;
   font-size: 14px;
+  white-space: nowrap;
+}
+
+.estado-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .estado-buttons button {
@@ -134,5 +156,6 @@ export default {
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
+  width: 100%;
 }
 </style>

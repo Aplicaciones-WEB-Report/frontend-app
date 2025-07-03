@@ -26,7 +26,7 @@ export default {
         <td><a :href="candidato.cv" target="_blank">{{ candidato.cv }}</a></td>
         <td>{{ candidato.status }}</td>
         <td>
-          <button class="ver-mas" @click="$emit('verMas', candidato)">Ver más</button>
+          <button class="ver-mas" @click="$emit('verMas', candidato)">Detalles</button>
         </td>
       </tr>
       </tbody>
@@ -37,7 +37,7 @@ export default {
 <style scoped>
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-spacing: 8px; /* Espaciado entre celdas */
   margin-bottom: 20px;
   font-size: 14px;
 }
@@ -47,13 +47,14 @@ th {
   color: white;
   padding: 10px;
   text-align: left;
-  border-radius: 4px 4px 0 0;
+  border-radius: 6px;
 }
 
 td {
   padding: 10px;
   background-color: #f5f5f5;
-  border-bottom: 1px solid #ddd;
+  border-radius: 6px; /* Bordes suaves en celdas */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06); /* Suave separación */
 }
 
 .ver-mas {

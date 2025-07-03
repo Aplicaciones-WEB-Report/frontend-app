@@ -119,7 +119,7 @@ export default {
 
     <!-- Botón Preguntar IA centrado -->
     <div class="mt-4 flex justify-content-center">
-      <button class="preguntar-ia" @click="mostrarTodos">Preguntar IA</button>
+      <button class="preguntar-ia" @click="mostrarTodos">Ver más</button>
     </div>
 
     <!-- Modal -->
