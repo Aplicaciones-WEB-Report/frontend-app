@@ -1,25 +1,21 @@
-
 <script>
 import Card from 'primevue/card';
 import Chart from 'primevue/chart';
+import { getJobOffersData } from '../services/JobOffers.service';
 
 export default {
   name: "PrincipalReclutador",
   components: { Card, Chart },
   data() {
     return {
-      publicaciones: [
-        { titulo: "Publicación 1", solicitudes: 32 },
-        { titulo: "Publicación 2", solicitudes: 15 },
-        { titulo: "Publicación 3", solicitudes: 19 },
-      ],
+      publicaciones: [],
       chartData1: {
-        labels: ['Publicación 1', 'Publicación 2', 'Publicación 3', 'Publicación 4'],
+        labels: [],
         datasets: [
           {
             label: 'Aplicaciones',
             backgroundColor: ['#a8dadc', '#457b9d', '#1d3557', '#74c69d'],
-            data: [32, 15, 10, 20]
+            data: []
           }
         ]
       },
@@ -38,9 +34,49 @@ export default {
     totalAplicaciones() {
       return this.publicaciones.reduce((acc, pub) => acc + pub.solicitudes, 0);
     }
+  },
+  methods: {
+    async cargarPublicaciones() {
+      try {
+        const response = await getJobOffersData();
+        const jobOffers = response.data;
+
+        this.publicaciones = jobOffers.map(offer => ({
+          titulo: offer.title,
+          solicitudes: Number(offer.applications) || 0
+        }));
+
+       
+
+        const labels = this.publicaciones.map(p => p.titulo);
+        const data = this.publicaciones.map(p => p.solicitudes);
+
+        // Debug
+        console.log("Títulos:", labels);
+        console.log("Solicitudes:", data);
+
+        // Forzar reactividad del gráfico
+        this.chartData1 = {
+          labels,
+          datasets: [
+            {
+              label: 'Aplicaciones',
+              backgroundColor: ['#a8dadc', '#457b9d', '#1d3557', '#74c69d'],
+              data
+            }
+          ]
+        };
+      } catch (error) {
+        console.error("Error al cargar las publicaciones:", error);
+      }
+    }
+  },
+  mounted() {
+    this.cargarPublicaciones();
   }
 };
 </script>
+
 
 <template>
   <div class="dashboard">
@@ -57,7 +93,6 @@ export default {
           </template>
           <template #footer>
             <p class="subtitle"><i class="pi pi-users icon"></i> N° Solicitudes</p>
-
             <p class="count">{{ pub.solicitudes }} Aplicaciones</p>
           </template>
         </Card>
@@ -70,7 +105,14 @@ export default {
       </h2>
       <div class="chart-box">
         <h3><i class="pi pi-chart-line chart-icon"></i> Aplicaciones por Publicación</h3>
-        <Chart type="bar" :data="chartData1" :options="chartOptions" />
+        
+        <Chart
+          v-if="chartData1.datasets[0].data.length"
+          type="bar"
+          :data="chartData1"
+          :options="chartOptions"
+        />
+        <p v-else style="text-align: center; color: #888;">No hay datos disponibles para mostrar el gráfico.</p>
 
         <div class="total-box">
           <i class="pi pi-calculator total-icon"></i>
@@ -80,6 +122,7 @@ export default {
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .dashboard {

@@ -167,5 +167,39 @@
       "end_date": "2024-02-24T00:00:00Z",
       "is_active": true
     }
+  ],
+  
+  "job_applications_summary": [
+    {
+      "id": "1",
+      "title": "Junior Data Analyst",
+      "applications": 12,
+      "views": 55
+    },
+    {
+      "id": "2",
+      "title": "Frontend Developer",
+      "applications": 15,
+      "views": 30
+    },
+    {
+      "id": "3",
+      "title": "Backend Engineer",
+      "applications": 18,
+      "views": 45
+    },
+    {
+      "id": "4",
+      "title": "UX Designer",
+      "applications": 28,
+      "views": 35
+    },
+    {
+      "id": "5",
+      "title": "Senior Backend Developer",
+      "applications": 12,
+      "views": 40
+    }
   ]
+
 }

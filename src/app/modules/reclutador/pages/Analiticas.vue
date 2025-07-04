@@ -1,5 +1,6 @@
 <script>
 import Chart from 'primevue/chart';
+import { getJobOffersData } from '../services/JobOffers.service'; // <- Correcto
 
 export default {
   name: 'Analiticas',
@@ -7,22 +8,22 @@ export default {
   data() {
     return {
       chartData1: {
-        labels: ['Publicación 1', 'Publicación 2', 'Publicación 3', 'Publicación 4'],
+        labels: [],
         datasets: [
           {
             label: 'Aplicaciones',
-            backgroundColor: ['#c4e4af', '#d7f0cb', '#b0eaa0', '#a0d08f'],
-            data: [32, 15, 18, 28]
+            backgroundColor: ['#c4e4af', '#d7f0cb', '#b0eaa0', '#a0d08f', '#99d199'],
+            data: []
           }
         ]
       },
       chartData2: {
-        labels: ['Publicación 1', 'Publicación 2', 'Publicación 3', 'Publicación 4'],
+        labels: [],
         datasets: [
           {
             label: 'Visualizaciones',
-            backgroundColor: ['#6a93b3', '#296597', '#6996bd', '#226397'],
-            data: [55, 30, 45, 35]
+            backgroundColor: ['#6a93b3', '#296597', '#6996bd', '#226397', '#5d7fa3'],
+            data: []
           }
         ]
       },
@@ -32,12 +33,33 @@ export default {
           legend: { display: false }
         },
         scales: {
-          y: {
-            beginAtZero: true
-          }
+          y: { beginAtZero: true }
         }
       }
     };
+  },
+  methods: {
+    async cargarAnaliticas() {
+      try {
+        const response = await getJobOffersData(); // <- Usa el nombre correcto
+        const analytics = response.data;
+
+        const titles = analytics.map(item => item.title);
+        const apps = analytics.map(item => item.applications);
+        const views = analytics.map(item => item.views);
+
+        this.chartData1.labels = titles;
+        this.chartData1.datasets[0].data = apps;
+
+        this.chartData2.labels = titles;
+        this.chartData2.datasets[0].data = views;
+      } catch (error) {
+        console.error("Error al cargar analíticas:", error);
+      }
+    }
+  },
+  mounted() {
+    this.cargarAnaliticas();
   }
 };
 </script>
