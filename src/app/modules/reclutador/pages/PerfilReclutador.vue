@@ -1,54 +1,82 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import FormularioEditarPerfilReclutador from '../components/FormularioEditarPerfilReclutador.component.vue';
+import { updateUserProfile } from '../../authentication/services/roles.service.js';
 
-defineOptions({
-  name: 'PerfilReclutador'
+
+const toBase64 = file => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = reject;
 });
 
+
+defineOptions({ name: 'PerfilReclutador' });
+
 const perfil = ref({
+  id: null,
   companyName: '',
   email: '',
   description: '',
-  logoUrl: null,
+  logoUrl: null, // Este campo guardará la cadena Base64
 });
 const modoEdicion = ref(false);
+const userObjectToEdit = ref(null);
 
-onMounted(async () => {
-  perfil.value = {
-    companyName: 'EmpresaX',
-    email: 'empresaX@gmail.com',
-    description: 'Somos una empresa de telecomunicaciones dedicada a nuestros clientes.',
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png',
-  };
+onMounted(() => {
+  const userData = JSON.parse(localStorage.getItem('user'));
+  if (userData) {
+    userObjectToEdit.value = userData;
+    perfil.value = {
+      id: userData.id,
+      companyName: userData.name,
+      email: userData.email,
+      description: userData.description || 'Añade una descripción de la empresa.',
+      logoUrl: userData.logoUrl || 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png',
+    };
+  }
 });
 
-const activarModoEdicion = () => {
-  modoEdicion.value = true;
-};
+const activarModoEdicion = () => modoEdicion.value = true;
+const desactivarModoEdicion = () => modoEdicion.value = false;
 
-const desactivarModoEdicion = () => {
-  modoEdicion.value = false;
-};
-
+// --- FUNCIÓN DE GUARDADO MODIFICADA ---
 const procesarGuardado = async (payload) => {
   const { datosFormulario, archivoLogo } = payload;
-  let nuevaUrlLogoParaGuardar = perfil.value.logoUrl;
+
+  const perfilParaActualizar = { ...userObjectToEdit.value };
 
   if (archivoLogo) {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    nuevaUrlLogoParaGuardar = URL.createObjectURL(archivoLogo);
+    try {
+      perfilParaActualizar.logoUrl = await toBase64(archivoLogo);
+    } catch (error) {
+      console.error("Error al convertir la imagen:", error);
+      alert("Hubo un problema al procesar la imagen.");
+      return;
+    }
   }
-  await new Promise(resolve => setTimeout(resolve, 300));
-  perfil.value = { ...datosFormulario, logoUrl: nuevaUrlLogoParaGuardar };
-  desactivarModoEdicion();
+
+  perfilParaActualizar.name = datosFormulario.companyName;
+  perfilParaActualizar.description = datosFormulario.description;
+
+  try {
+    const perfilActualizado = await updateUserProfile(perfilParaActualizar);
+
+    perfil.value.companyName = perfilActualizado.name;
+    perfil.value.description = perfilActualizado.description;
+    perfil.value.logoUrl = perfilActualizado.logoUrl; // <-- Actualizamos el logo
+
+    alert("Perfil actualizado correctamente.");
+    desactivarModoEdicion();
+  } catch(error) {
+    alert("No se pudo actualizar el perfil.");
+  }
 };
 </script>
 
 <template>
   <div class="pagina-perfil-contenedor">
-
-
     <div v-if="!modoEdicion" class="tarjeta-vista-perfil">
       <div class="cabecera-vista-perfil">
         <h1 class="titulo-vista-perfil">Perfil</h1>
@@ -96,8 +124,6 @@ const procesarGuardado = async (payload) => {
     </FormularioEditarPerfilReclutador>
   </div>
 </template>
-
-
 
 <style scoped>
 .pagina-perfil-contenedor {
