@@ -32,7 +32,9 @@ export default {
 .content-area {
   flex-grow: 1;
   padding: 20px;
-  background-color: #ffffff;
+  background-image: url('https://lh7-rt.googleusercontent.com/docsz/AD_4nXfYhoMg9TpR-XpVvYNskrbuDrkZXl-G0x4OeiB44_akp5oQVgSSphIrSScr_WAnkMZ7yLLVHqN1ucKdvzZBzNXhvgYB3MLT2E0EXmnmSeqrLx681oUWNMAABMCI5ra4AY3BR-K6?key=mZ-JPZW_wxy9hU88SGvQiA');
+  background-size: cover;
+  background-position: center;
   overflow-y: auto;
 }
 </style>
