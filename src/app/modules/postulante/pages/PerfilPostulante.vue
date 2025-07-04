@@ -1,46 +1,83 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import FormularioEditarPerfilPostulante from '../components/FormularioEditarPerfilPostulante.component.vue'
+import { updateUserProfile } from '../../authentication/services/roles.service.js';
 
-defineOptions({
-  name: 'PerfilPostulante'
+// para convertir el archivo a Base64
+const toBase64 = file => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = reject;
 });
+
+
+defineOptions({ name: 'PerfilPostulante' });
+
 const perfil = ref({
-  nombre: '',
+  id: null,
+  name: '',
   correo: '',
   descripcion: '',
-  fotoUrl: null,
+  fotoUrl: null, // Este campo ahora guardará la cadena Base64
 });
 const modoEdicion = ref(false);
+const userObjectToEdit = ref(null);
 
-onMounted(async () => {
-  perfil.value = {
-    nombre: 'Postulante X',
-    correo: 'postulantex@gmail.com',
-    descripcion: 'Quiero trabajo y aprender mucho.',
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png',
-  };
+onMounted(() => {
+  const userData = JSON.parse(localStorage.getItem('user'));
+  if (userData) {
+    userObjectToEdit.value = userData;
+    perfil.value = {
+      id: userData.id,
+      name: userData.name,
+      correo: userData.email,
+      descripcion: userData.description || 'Añade una descripción sobre ti.',
+      // Aquí 'fotoUrl' viene de la DB y ya podría ser Base64 o una URL placeholder
+      fotoUrl: userData.fotoUrl || 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png',
+    };
+  }
 });
 
-const activarModoEdicion = () => {
-  modoEdicion.value = true;
-};
+const activarModoEdicion = () => modoEdicion.value = true;
+const desactivarModoEdicion = () => modoEdicion.value = false;
 
-const desactivarModoEdicion = () => {
-  modoEdicion.value = false;
-};
-
+// --- FUNCIÓN DE GUARDADO MODIFICADA ---
 const procesarGuardado = async (payload) => {
   const { datosFormulario, archivoFoto } = payload;
-  let nuevaUrlFotoParaGuardar = perfil.value.fotoUrl;
 
+  // Hacemos una copia del objeto de usuario para actualizarlo
+  const perfilParaActualizar = { ...userObjectToEdit.value };
+
+  // Si el usuario seleccionó un nuevo archivo de foto...
   if (archivoFoto) {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    nuevaUrlFotoParaGuardar = URL.createObjectURL(archivoFoto);
+    try {
+      // ...lo convertimos a Base64 y lo guardamos en el campo 'fotoUrl'.
+      perfilParaActualizar.fotoUrl = await toBase64(archivoFoto);
+    } catch (error) {
+      console.error("Error al convertir la imagen:", error);
+      alert("Hubo un problema al procesar la imagen.");
+      return; // Detenemos el proceso si hay un error
+    }
   }
-  await new Promise(resolve => setTimeout(resolve, 300));
-  perfil.value = { ...datosFormulario, fotoUrl: nuevaUrlFotoParaGuardar };
-  desactivarModoEdicion();
+
+  // Actualizamos el resto de los datos del formulario
+  perfilParaActualizar.name = datosFormulario.nombre;
+  perfilParaActualizar.description = datosFormulario.descripcion;
+
+  try {
+    const perfilActualizado = await updateUserProfile(perfilParaActualizar);
+
+    // Actualizamos el estado local para reflejar todos los cambios inmediatamente
+    perfil.value.name = perfilActualizado.name;
+    perfil.value.descripcion = perfilActualizado.description;
+    perfil.value.fotoUrl = perfilActualizado.fotoUrl; // <-- Actualizamos también la foto
+
+    alert("Perfil actualizado correctamente.");
+    desactivarModoEdicion();
+  } catch(error) {
+    alert("No se pudo actualizar el perfil.");
+  }
 };
 </script>
 
@@ -55,7 +92,7 @@ const procesarGuardado = async (payload) => {
         <div class="p-col-12 md:p-col-8 columna-info-vista">
           <div class="p-field">
             <label>Nombre</label>
-            <div class="valor-visualizacion">{{ perfil.nombre }}</div>
+            <div class="valor-visualizacion">{{ perfil.name }}</div>
           </div>
           <div class="p-field">
             <label>Correo Electrónico</label>
@@ -89,6 +126,7 @@ const procesarGuardado = async (payload) => {
       </div>
     </div>
 
+    <!-- El formulario de edición no cambia, pero ahora sus datos iniciales vienen de 'perfil', que se rellena desde localStorage -->
     <FormularioEditarPerfilPostulante
         v-if="modoEdicion"
         :datosInicialesPerfil="perfil"
@@ -212,5 +250,4 @@ const procesarGuardado = async (payload) => {
   font-size: 4rem;
   color: #ccc;
 }
-
 </style>
