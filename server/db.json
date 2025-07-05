@@ -2,209 +2,109 @@
   "users": [
     {
       "id": "6584",
-      "name": "Jasmin",
-      "email": "jasminurrutia30@gmail.com",
-      "password": "12345678",
+      "name": "Jasmin Urrutia",
+      "email": "jasmin@email.com",
+      "password": "1234",
       "role": "candidate",
-      "description": "hola",
+      "description": "Busco oportunidades en el area de TI.",
       "created_at": "2025-07-04T01:57:09.656Z",
       "fotoUrl": ""
     },
     {
       "id": "9ff7",
-      "name": "Julio",
+      "name": "Empresa Tech Innovators",
       "email": "julio@gmail.com",
+      "password": "1234",
+      "role": "employer",
+      "description": "Líderes en soluciones de software.",
+      "created_at": "2025-07-04T06:17:43.151Z"
+    },
+    {
+      "id": "9725",
+      "name": "Maria Garcia",
+      "email": "maria@gmail.com",
+      "password": "1234",
+      "role": "candidate",
+      "description": "Estudiante de marketing con ganas de aprender.",
+      "created_at": "2025-07-05T02:29:10.819Z"
+    },
+    {
+      "id": "8300",
+      "name": "Jose",
+      "email": "jose@gmail.com",
       "password": "12345678",
       "role": "employer",
       "description": "",
-      "created_at": "2025-07-04T06:17:43.151Z"
-    }
-  ],
-  "candidate_profiles": [
-    {
-      "id": "1",
-      "user_id": 1,
-      "name": "Jane Doe",
-      "publicationNumber": "Publicación 1",
-      "cv": "Jane_Doe_CV.pdf",
-      "posible": false
-    },
-    {
-      "id": "2",
-      "user_id": 2,
-      "name": "Carlos León",
-      "publicationNumber": "Publicación 2",
-      "cv": "Carlos_Leon_CV.pdf",
-      "posible": true
-    },
-    {
-      "id": "3",
-      "user_id": 3,
-      "name": "Lucía Torres",
-      "publicationNumber": "Publicación 3",
-      "cv": "Lucia_Torres_CV.pdf",
-      "posible": false
-    },
-    {
-      "id": "4",
-      "user_id": 4,
-      "name": "Pedro Gómez",
-      "publicationNumber": "Publicación 4",
-      "cv": "Pedro_Gomez_CV.pdf",
-      "posible": true
-    },
-    {
-      "id": "5",
-      "user_id": 5,
-      "name": "María Fernández",
-      "publicationNumber": "Publicación 5",
-      "cv": "Maria_Fernandez_CV.pdf",
-      "posible": true
-    },
-    {
-      "id": "6",
-      "user_id": 6,
-      "name": "José Salazar",
-      "publicationNumber": "Publicación 6",
-      "cv": "Jose_Salazar_CV.pdf",
-      "posible": false
-    }
-  ],
-  "employer_profiles": [
-    {
-      "id": "1",
-      "user_id": 2,
-      "company_name": "TechCorp",
-      "description": "A leading tech solutions provider.",
-      "logo_url": "https://example.com/logo.png",
-      "website": "https://techcorp.com"
+      "created_at": "2025-07-05T04:01:38.274Z"
     }
   ],
   "job_offers": [
     {
-      "id": "1",
-      "employer_id": 1,
-      "title": "Junior Data Analyst",
-      "description": "Analyze datasets to support business decisions.",
-      "requirements": "Bachelor's degree in related field, SQL knowledge",
-      "location": "Remote",
-      "salary_range": "2500-3500",
-      "status": "Activa",
-      "created_at": "2024-02-01T08:00:00Z",
-      "applicationCount": 0
+      "id": "1cc9",
+      "employer_id": "9ff7",
+      "title": "Desarrollador Full-Stack",
+      "description": "Buscamos un desarrollador con experiencia en .NET y Vue.js.",
+      "requirements": ".NET, Vue.js, SQL Server",
+      "location": "Remoto (Latam)",
+      "salary_range": "S/ 5000 - S/ 7000",
+      "created_at": "2025-07-05T02:37:45.228Z",
+      "status": "Activa"
     },
     {
-      "id": "12fb",
-      "employer_id": null,
-      "title": "vffv",
-      "description": "vfvfv",
-      "requirements": "vfvfv",
-      "location": "vfvf",
-      "salary_range": "13",
-      "created_at": "2025-07-03T03:42:34.437Z",
+      "id": "b60b",
+      "employer_id": "9ff7",
+      "title": "Analista QA",
+      "description": "Responsable de asegurar la calidad de nuestras aplicaciones.",
+      "requirements": "Experiencia en testing manual y automatizado.",
+      "location": "Lima, Perú",
+      "salary_range": "S/ 3500 - S/ 4500",
+      "created_at": "2025-07-05T02:43:23.196Z",
+      "status": "Activa"
+    },
+    {
+      "id": "be09",
+      "employer_id": "8300",
+      "title": "Chofer",
+      "description": "manejar",
+      "requirements": "x",
+      "location": "upc",
+      "salary_range": "1200",
+      "created_at": "2025-07-05T04:02:14.792Z",
       "status": "Activa"
     }
   ],
   "applications": [
     {
-      "id": "1",
-      "job_offer_id": 1,
-      "candidate_id": 1,
-      "application_date": "2024-02-05T10:15:00Z",
-      "status": "pending"
+      "id": "2cde",
+      "job_offer_id": "1cc9",
+      "candidate_id": "6584",
+      "application_date": "2025-07-05T02:39:04.022Z",
+      "status": "pending",
+      "cv_url": "https://mi-drive.com/cv-jasmin.pdf"
     },
     {
-      "id": "28e2",
-      "job_offer_id": "12fb",
-      "candidate_id": "1",
-      "application_date": "2025-07-03T03:43:29.140Z",
-      "status": "pending"
+      "id": "c7a7",
+      "job_offer_id": "b60b",
+      "candidate_id": "9725",
+      "application_date": "2025-07-05T02:44:13.566Z",
+      "status": "pending",
+      "cv_url": "https://mi-drive.com/cv-empleo.pdf"
     }
   ],
   "messages": [
     {
-      "id": "1",
-      "application_id": 1,
-      "sender_id": 1,
-      "receiver_id": 2,
-      "content": "Hello, I’m interested in the Data Analyst position.",
-      "sent_at": "2024-02-05T11:00:00Z"
-    }
-  ],
-  "interviews": [
-    {
-      "id": "1",
-      "employer_id": 1,
-      "candidate_id": 1,
-      "job_offer_id": 1,
-      "scheduled_date": "2024-02-10T14:00:00Z",
-      "location": "Zoom",
-      "interview_mode": "online",
-      "status": "scheduled",
-      "notes": "Candidate seems promising."
-    }
-  ],
-  "evaluations": [
-    {
-      "id": "1",
-      "interview_id": 1,
-      "candidate_id": 1,
-      "rating": 4.5,
-      "comments": "Strong analytical skills and communication.",
-      "evaluation_date": "2024-02-10T15:30:00Z"
-    }
-  ],
-  "membership_plans": [
-    {
-      "id": "1",
-      "name": "Basic Plan",
-      "description": "Access to up to 5 job postings.",
-      "price": 49.99,
-      "duration_days": 30
-    }
-  ],
-  "employer_memberships": [
-    {
-      "id": "1",
-      "employer_id": 1,
-      "membership_plan_id": 1,
-      "start_date": "2024-01-25T00:00:00Z",
-      "end_date": "2024-02-24T00:00:00Z",
-      "is_active": true
-    }
-  ],
-  
-  "job_applications_summary": [
-    {
-      "id": "1",
-      "title": "Junior Data Analyst",
-      "applications": 12,
-      "views": 55
+      "id": "c4a8",
+      "sender_id": "9ff7",
+      "receiver_id": "6584",
+      "content": "hola estamos interesados en ti",
+      "sent_at": "2025-07-05T03:54:22.917Z"
     },
     {
-      "id": "2",
-      "title": "Frontend Developer",
-      "applications": 15,
-      "views": 30
-    },
-    {
-      "id": "3",
-      "title": "Backend Engineer",
-      "applications": 18,
-      "views": 45
-    },
-    {
-      "id": "4",
-      "title": "UX Designer",
-      "applications": 28,
-      "views": 35
-    },
-    {
-      "id": "5",
-      "title": "Senior Backend Developer",
-      "applications": 12,
-      "views": 40
+      "id": "d3bf",
+      "sender_id": "9ff7",
+      "receiver_id": "6584",
+      "content": "bu",
+      "sent_at": "2025-07-05T04:07:53.945Z"
     }
   ]
-
 }
