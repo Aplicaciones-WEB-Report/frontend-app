@@ -15,37 +15,37 @@ export default {
   <div class="candidato-table-container">
     <div class="table-grid">
       <!-- Encabezados de la Tabla -->
-      <div class="table-header">Nombre</div>
-      <div class="table-header">Nro° Publicación</div>
-      <div class="table-header">Curriculum Vitae</div>
-      <div class="table-header">Estado</div>
-      <div class="table-header">Acciones</div>
+      <div class="table-header">{{ $t("nombre") }}</div>
+      <div class="table-header">{{ $t("nro_publicacion") }}</div>
+      <div class="table-header">{{ $t("curriculum_vitae") }}</div>
+      <div class="table-header">{{ $t("estado") }}</div>
+      <div class="table-header">{{ $t("acciones") }}</div>
 
       <!-- Filas de Datos -->
       <template v-if="candidatos.length > 0">
         <template v-for="candidato in candidatos" :key="candidato.id">
-          <div class="table-cell" :data-label="'Nombre'">{{ candidato.name }}</div>
-          <div class="table-cell" :data-label="'Nro° Publicación'">{{ candidato.publicationNumber }}</div>
+          <div class="table-cell" :data-label="$t('nombre')">{{ candidato.name }}</div>
+          <div class="table-cell" :data-label="$t('nro_publicacion')">{{ candidato.publicationNumber }}</div>
 
           <!-- Celda del CV con lógica condicional -->
-          <div class="table-cell" :data-label="'Curriculum Vitae'">
+          <div class="table-cell" :data-label="$t('curriculum_vitae')">
             <a v-if="candidato.cv" :href="candidato.cv" target="_blank" rel="noopener noreferrer" class="cv-link">
-              Ver CV
+              {{ $t("ver_cv") }}
             </a>
-            <span v-else class="no-cv">No proporcionado</span>
+            <span v-else class="no-cv">{{ $t("no_cv") }}</span>
           </div>
 
-          <div class="table-cell" :data-label="'Estado'">{{ candidato.status }}</div>
+          <div class="table-cell" :data-label="$t('estado')">{{ candidato.status }}</div>
 
-          <div class="table-cell actions-cell" :data-label="'Acciones'">
-            <button @click="$emit('verMas', candidato)" class="action-btn details-btn">Detalles</button>
-            <button @click="$emit('contactar', candidato)" class="action-btn contact-btn">Contactar</button>
+          <div class="table-cell actions-cell" :data-label="$t('acciones')">
+            <button @click="$emit('verMas', candidato)" class="action-btn details-btn">{{ $t("detalles") }}</button>
+            <button @click="$emit('contactar', candidato)" class="action-btn contact-btn">{{ $t("contactar") }}</button>
           </div>
         </template>
       </template>
 
       <div v-else class="no-data-row">
-        No hay candidatos para mostrar.
+        {{ $t("no_candidatos") }}
       </div>
     </div>
   </div>

@@ -83,18 +83,18 @@ export default {
 <template>
   <div class="dashboard">
     <div class="header">
-      <h2>Publicaciones Recientes</h2>
+      <h2>{{ $t("publicaciones_recientes") }}</h2>
     </div>
 
     <div class="cards">
       <div v-for="(pub, index) in publicaciones" :key="index" class="card-container">
         <Card class="card">
           <template #title>
-            <p class="subtitle"><i class="pi pi-briefcase icon"></i> Título</p>
+            <p class="subtitle"><i class="pi pi-briefcase icon"></i> {{ $t("columna_titulo") }}</p>
             <span class="titulo">{{ pub.title }}</span>
           </template>
           <template #footer>
-            <p class="subtitle"><i class="pi pi-align-left icon"></i> Descripción</p>
+            <p class="subtitle"><i class="pi pi-align-left icon"></i> {{ $t("columna_descripcion") }}</p>
             <p class="count">{{ pub.description }}</p>
           </template>
         </Card>
@@ -103,10 +103,10 @@ export default {
 
     <div class="analiticas-section">
       <h2 class="analytics-title">
-        <i class="pi pi-chart-bar analytics-icon"></i> Analíticas
+        <i class="pi pi-chart-bar analytics-icon"></i> {{ $t("analiticas") }}
       </h2>
       <div class="chart-box">
-        <h3><i class="pi pi-chart-line chart-icon"></i> Aplicaciones por Publicación</h3>
+        <h3><i class="pi pi-chart-line chart-icon"></i> {{ $t("aplicaciones_por_publicacion") }}</h3>
 
         <Chart
             v-if="chartData1.datasets[0].data.length"
@@ -114,11 +114,11 @@ export default {
             :data="chartData1"
             :options="chartOptions"
         />
-        <p v-else style="text-align: center; color: #888;">No hay datos disponibles para mostrar el gráfico.</p>
+        <p v-else style="text-align: center; color: #888;">{{ $t("sin_datos_grafico") }}</p>
 
         <div class="total-box">
           <i class="pi pi-calculator total-icon"></i>
-          Total Aplicaciones: <span class="total-number">{{ totalAplicaciones }}</span>
+          {{ $t("total_aplicaciones") }}: <span class="total-number">{{ totalAplicaciones }}</span>
         </div>
       </div>
     </div>

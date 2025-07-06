@@ -70,7 +70,7 @@ export default {
     <nav>
       <ul>
         <li><router-link to="/postulante/panel-principal" @click="closeMobileMenu">{{$t("panel")}}</router-link></li>
-        <li><router-link to="/postulante/ofertas-empleo">Buscar Empleos</router-link></li>
+        <li><router-link to="/postulante/ofertas-empleo" @click="closeMobileMenu">{{$t("buscar_empleos")}}</router-link></li>
         <li><router-link to="/postulante/postulaciones" @click="closeMobileMenu">{{$t("postulaciones")}}</router-link></li>
         <li><router-link to="/postulante/bandeja-entrada" @click="closeMobileMenu">{{$t("bandeja")}}</router-link></li>
         <li><router-link to="/postulante/perfil" @click="closeMobileMenu">{{$t("perfil")}}</router-link></li>
@@ -79,7 +79,7 @@ export default {
     <LanguageSwitcher />
 
     <div class="logout-section">
-      <a href="#" @click.prevent="logout" class="logout-link">Cerrar sesión</a>
+      <a href="#" @click.prevent="logout" class="logout-link">{{$t("cerrar_sesion")}}</a>
     </div>
   </aside>
 </template>

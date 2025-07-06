@@ -130,114 +130,113 @@ export default {
 
 <template>
   <div class="reclutador-publicaciones">
-    <h2>Publicaciones</h2>
+    <h2>{{ $t("publicaciones") }}</h2>
 
     <div class="top-controls">
       <div class="search-filter">
         <input
             v-model="filtroTitulo"
             type="text"
-            placeholder="Buscar por título..."
+            :placeholder="$t('buscar_por_titulo')"
         />
       </div>
-
     </div>
 
     <div class="publication-grid">
-      <div class="header-cell">Título</div>
-      <div class="header-cell">Estado</div>
-      <div class="header-cell">Aplicaciones</div>
-      <div class="header-cell">Acciones</div>
+      <div class="header-cell">{{ $t("columna_titulo") }}</div>
+      <div class="header-cell">{{ $t("columna_estado") }}</div>
+      <div class="header-cell">{{ $t("columna_aplicaciones") }}</div>
+      <div class="header-cell">{{ $t("columna_acciones") }}</div>
 
       <template v-if="publicacionesPaginadas.length > 0">
         <template v-for="publicacion in publicacionesPaginadas" :key="publicacion.id">
-          <div class="data-cell" :data-label="'Título'">{{ publicacion.title }}</div>
-          <div class="data-cell" :data-label="'Estado'">
-    <span :class="['status-badge', publicacion.status === 'Activa' ? 'status-active' : 'status-draft']">
-      {{ publicacion.status }}
-    </span>
+          <div class="data-cell" :data-label="$t('columna_titulo')">{{ publicacion.title }}</div>
+          <div class="data-cell" :data-label="$t('columna_estado')">
+            <span :class="['status-badge', publicacion.status === 'Activa' ? 'status-active' : 'status-draft']">
+              {{ publicacion.status }}
+            </span>
           </div>
-          <div class="data-cell" :data-label="'Aplicaciones'">{{ publicacion.applicationCount }}</div>
-          <div class="data-cell" :data-label="'Acciones'">
+          <div class="data-cell" :data-label="$t('columna_aplicaciones')">{{ publicacion.applicationCount }}</div>
+          <div class="data-cell" :data-label="$t('columna_acciones')">
             <div class="acciones">
-              <button class="ver" @click="abrirModalVer(publicacion)">Ver</button>
-              <button class="editar" @click="abrirModalEditar(publicacion)">Editar</button>
-              <button class="eliminar" @click="abrirModalEliminar(publicacion)">Eliminar</button>
+              <button class="ver" @click="abrirModalVer(publicacion)">{{ $t("accion_ver") }}</button>
+              <button class="editar" @click="abrirModalEditar(publicacion)">{{ $t("accion_editar") }}</button>
+              <button class="eliminar" @click="abrirModalEliminar(publicacion)">{{ $t("accion_eliminar") }}</button>
             </div>
           </div>
         </template>
       </template>
-        <div v-else class="no-data-cell">
-        No hay publicaciones para mostrar.
+      <div v-else class="no-data-cell">
+        {{ $t("no_publicaciones_para_mostrar") }}
       </div>
     </div>
 
     <div class="pagination" v-if="totalPaginas > 1">
-      <button @click="cambiarPagina(paginaActual - 1)" :disabled="paginaActual === 1">Anterior</button>
+      <button @click="cambiarPagina(paginaActual - 1)" :disabled="paginaActual === 1">{{ $t("anterior") }}</button>
       <button
           v-for="n in totalPaginas"
           :key="n"
           :class="{ activa: paginaActual === n }"
           @click="cambiarPagina(n)"
       >{{ n }}</button>
-      <button @click="cambiarPagina(paginaActual + 1)" :disabled="paginaActual === totalPaginas">Siguiente</button>
+      <button @click="cambiarPagina(paginaActual + 1)" :disabled="paginaActual === totalPaginas">{{ $t("siguiente") }}</button>
     </div>
     <div class="button-new-publication">
-      <button class="new-publication" @click="abrirModalNuevaPublicacion">Nueva Publicación</button>
+      <button class="new-publication" @click="abrirModalNuevaPublicacion">{{ $t("nueva_publicacion") }}</button>
     </div>
     <div v-if="modalVer" class="modal">
       <div class="modal-content">
-        <h3>Detalle de Publicación</h3>
-        <p><strong>Título:</strong> {{ publicacionSeleccionada.title }}</p>
-        <p><strong>Descripción:</strong> {{ publicacionSeleccionada.description }}</p>
-        <p><strong>Requisitos:</strong> {{ publicacionSeleccionada.requirements }}</p>
-        <p><strong>Ubicación:</strong> {{ publicacionSeleccionada.location }}</p>
-        <p><strong>Salario:</strong> {{ publicacionSeleccionada.salary_range }}</p>
-        <p><strong>Estado:</strong> {{ publicacionSeleccionada.status }}</p>
-        <button @click="modalVer = false">Cerrar</button>
+        <h3>{{ $t("detalle_publicacion") }}</h3>
+        <p><strong>{{ $t("titulo") }}:</strong> {{ publicacionSeleccionada.title }}</p>
+        <p><strong>{{ $t("descripcion") }}:</strong> {{ publicacionSeleccionada.description }}</p>
+        <p><strong>{{ $t("requisitos") }}:</strong> {{ publicacionSeleccionada.requirements }}</p>
+        <p><strong>{{ $t("ubicacion") }}:</strong> {{ publicacionSeleccionada.location }}</p>
+        <p><strong>{{ $t("salario") }}:</strong> {{ publicacionSeleccionada.salary_range }}</p>
+        <p><strong>{{ $t("estado") }}:</strong> {{ publicacionSeleccionada.status }}</p>
+        <button @click="modalVer = false">{{ $t("cerrar") }}</button>
       </div>
     </div>
 
     <div v-if="modalEliminar" class="modal">
       <div class="modal-content">
-        <h3>¿Estás seguro de eliminar esta publicación?</h3>
-        <p>Esta acción no se puede deshacer.</p>
-        <p><strong>Título:</strong> {{ publicacionSeleccionada.title }}</p>
+        <h3>{{ $t("confirmar_eliminar_titulo") }}</h3>
+        <p>{{ $t("confirmar_eliminar_texto") }}</p>
+        <p><strong>{{ $t("titulo") }}:</strong> {{ publicacionSeleccionada.title }}</p>
         <div class="modal-buttons">
-          <button class="confirm-delete" @click="eliminarPublicacionConfirmada">Sí, eliminar</button>
-          <button @click="modalEliminar = false">Cancelar</button>
+          <button class="confirm-delete" @click="eliminarPublicacionConfirmada">{{ $t("confirmar") }}</button>
+          <button @click="modalEliminar = false">{{ $t("cancelar") }}</button>
         </div>
       </div>
     </div>
 
     <div v-if="modalEditar" class="modal">
       <div class="modal-content">
-        <h3>{{ formulario.id ? 'Editar' : 'Nueva' }} Publicación</h3>
+        <h3>{{ formulario.id ? $t("editar_publicacion") : $t("nueva_publicacion") }}</h3>
         <form @submit.prevent="guardarPublicacion">
-          <label>Título del Puesto:</label>
+          <label>{{ $t("titulo_puesto") }}</label>
           <input v-model="formulario.title" type="text" required />
 
-          <label>Descripción:</label>
+          <label>{{ $t("descripcion") }}</label>
           <textarea v-model="formulario.description" rows="4"></textarea>
 
-          <label>Requisitos:</label>
+          <label>{{ $t("requisitos") }}</label>
           <textarea v-model="formulario.requirements" rows="4"></textarea>
 
-          <label>Ubicación:</label>
+          <label>{{ $t("ubicacion") }}</label>
           <input v-model="formulario.location" type="text" />
 
-          <label>Rango Salarial:</label>
+          <label>{{ $t("rango_salarial") }}</label>
           <input v-model="formulario.salary_range" type="text" />
 
-          <label>Estado:</label>
+          <label>{{ $t("estado") }}</label>
           <select v-model="formulario.status">
-            <option value="Activa">Activa</option>
-            <option value="Borrador">Borrador</option>
+            <option value="Activa">{{ $t("activa") }}</option>
+            <option value="Borrador">{{ $t("borrador") }}</option>
           </select>
 
           <div class="modal-buttons">
-            <button type="submit">Guardar</button>
-            <button type="button" @click="cerrarModalEditar">Cancelar</button>
+            <button type="submit">{{ $t("guardar") }}</button>
+            <button type="button" @click="cerrarModalEditar">{{ $t("cancelar") }}</button>
           </div>
         </form>
       </div>

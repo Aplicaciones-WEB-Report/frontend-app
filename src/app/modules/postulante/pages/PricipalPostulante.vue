@@ -97,7 +97,7 @@ export default {
 <template>
   <div class="dashboard">
     <div class="header">
-      <h2>Publicaciones Recientes</h2>
+      <h2>{{ $t("publicaciones_recientes") }}</h2>
     </div>
 
     <div class="cards">
@@ -118,7 +118,7 @@ export default {
 
     <div class="inbox-section">
       <div class="header-inbox p-mb-3">
-        <h2>Bandeja de Entrada</h2>
+        <h2>{{ $t("bandeja") }}</h2>
       </div>
 
       <div v-if="isLoadingNotifications" class="loading-message">
@@ -140,7 +140,7 @@ export default {
       </div>
 
       <div v-else class="no-notifications">
-        No tienes mensajes nuevos.
+        {{ $t("sin_mensajes") }}
       </div>
     </div>
   </div>

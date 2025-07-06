@@ -14,10 +14,10 @@ export default {
         @input="$emit('update:filtro', $event.target.value)"
         type="text"
         class="p-inputtext p-component w-full sm:w-30rem"
-        placeholder="Buscar por nombre..."
+        :placeholder="$t('buscar_por_nombre')"
     />
     <button @click="$emit('filtrar')" class="p-button p-component">
-      Filtrar
+      {{ $t('filtrar') }}
     </button>
   </div>
 </template>

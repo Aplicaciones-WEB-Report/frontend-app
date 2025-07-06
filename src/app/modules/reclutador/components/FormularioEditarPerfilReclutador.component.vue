@@ -61,7 +61,7 @@ const manejarArchivoSeleccionado = (event) => {
 <template>
   <div class="contenedor-formulario-editar-perfil">
     <div class="cabecera-formulario-editar">
-      <h2 class="titulo-formulario-editar">Editar Perfil</h2>
+      <h2 class="titulo-formulario-editar">{{ $t('editar_perfil') }}</h2>
       <pv-button icon="pi pi-times" class="p-button-rounded p-button-text boton-cerrar-edicion" @click="accionCancelar" aria-label="Cerrar edición"/>
     </div>
 
@@ -69,37 +69,37 @@ const manejarArchivoSeleccionado = (event) => {
       <!-- Columna de Información Editable (Izquierda) -->
       <div class="p-col-12 md:p-col-8 columna-campos-formulario">
         <div class="p-field espacio-campo">
-          <label for="nombreEmpresaForm">Nombre de la Empresa</label>
+          <label for="nombreEmpresaForm">{{ $t('nombre_empresa') }}</label>
           <pv-inputtext id="nombreEmpresaForm" v-model="datosEditables.companyName" class="campo-input-formulario"/>
         </div>
 
         <div class="p-field espacio-campo">
-          <label for="correoEmpresaForm">Correo Electrónico</label>
+          <label for="correoEmpresaForm">{{ $t('correo_electronico') }}</label>
           <pv-inputtext id="correoEmpresaForm" v-model="datosEditables.email" type="email" class="campo-input-formulario"/>
         </div>
 
         <div class="p-field espacio-campo">
-          <label for="descripcionEmpresaForm">Descripción</label>
+          <label for="descripcionEmpresaForm">{{ $t('descripcion') }}</label>
           <pv-textarea id="descripcionEmpresaForm" v-model="datosEditables.description" rows="5" autoResize class="campo-textarea-formulario"/>
         </div>
       </div>
 
       <div class="p-col-12 md:p-col-4 columna-logo-formulario">
-        <p class="etiqueta-logo-formulario">Logo de la Empresa</p>
+        <p class="etiqueta-logo-formulario">{{ $t('logo_empresa') }}</p>
         <div class="area-subida-logo-formulario">
-          <div class="circulo-logo-formulario" @click="activarSeleccionArchivo" title="Haz clic para cambiar el logo">
+          <div class="circulo-logo-formulario" @click="activarSeleccionArchivo" :title="$t('cambiar_logo_tooltip')">
             <img v-if="urlPrevisualizacion" :src="urlPrevisualizacion" alt="Previsualización Logo" class="previsualizacion-logo-formulario"/>
 
             <span v-else class="pi pi-camera icono-placeholder-logo-grande"></span>
           </div>
-          <pv-button label="Cambiar foto de perfil" class="p-button-text enlace-cambiar-foto" @click="activarSeleccionArchivo" />
+          <pv-button :label="$t('cambiar_foto_perfil')" class="p-button-text enlace-cambiar-foto" @click="activarSeleccionArchivo" />
         </div>
         <input type="file" ref="inputArchivoRef" @change="manejarArchivoSeleccionado" style="display: none;" accept="image/*" />
       </div>
     </div>
 
     <div class="pie-acciones-formulario">
-      <pv-button label="Guardar Cambios" class="boton-guardar-cambios" @click="accionGuardar" />
+      <pv-button :label="$t('guardar_cambios')" class="boton-guardar-cambios" @click="accionGuardar" />
     </div>
   </div>
 </template>

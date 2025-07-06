@@ -52,22 +52,22 @@ export default {
     <div class="chat-content">
       <!-- Título -->
       <h2 class="title">
-        💬 Chat con Jobsy AI
+        💬 {{ $t("chat_con_ai") }}
       </h2>
 
       <!-- Contenedor del formulario de envío -->
       <div class="input-area">
         <!-- Input de archivo -->
-        <label for="file-upload" class="file-label" title="Adjuntar PDF">
+        <label for="file-upload" class="file-label" :title="$t('adjuntar_pdf')">
           <PlusIcon class="plus-icon" />
-          <span v-if="file" class="file-name">Archivo: {{ file.name }}</span>
+          <span v-if="file" class="file-name">{{ $t('archivo') }}: {{ file.name }}</span>
           <input id="file-upload" type="file" accept="application/pdf" @change="onFileChange" />
         </label>
 
         <!-- Input de texto -->
         <input
             v-model="objective"
-            placeholder="Escribe tu mensaje..."
+            :placeholder="$t('escribe_mensaje')"
             class="text-input"
         />
 
@@ -77,20 +77,20 @@ export default {
             :disabled="loading || (!file && !objective)"
             class="send-button"
         >
-          Enviar
+          {{ $t("enviar") }}
         </button>
       </div>
 
       <!-- Loader de carga -->
       <div v-if="loading" class="loader-overlay">
         <div class="spinner"></div>
-        <p class="loader-text">Analizando...</p>
+        <p class="loader-text">{{ $t("analizando") }}</p>
       </div>
     </div>
 
     <!-- Contenedor de la respuesta -->
     <div v-if="response" class="response-ai">
-      <h4>Respuesta de la IA:</h4>
+      <h4>{{ $t("respuesta_ia") }}</h4>
       <p>{{ response }}</p>
     </div>
   </div>

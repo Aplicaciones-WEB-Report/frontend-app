@@ -30,17 +30,17 @@ export default {
   <div class="modal-overlay" @click.self="$emit('cerrar')">
     <div class="modal-container">
       <button class="close-button" @click="$emit('cerrar')">×</button>
-      <h3>Contactar a {{ candidato.name }}</h3>
-      <p class="subtitle">Escribe un mensaje para iniciar la conversación.</p>
+      <h3>{{ $t("contactar_a") }} {{ candidato.name }}</h3>
+      <p class="subtitle">{{ $t("mensaje_inicial") }}</p>
 
       <form @submit.prevent="enviarMensaje">
         <textarea
             v-model="mensaje"
             rows="5"
-            placeholder="Ej: Hola, estamos muy interesados en tu perfil y nos gustaría programar una entrevista..."
+            :placeholder="$t('placeholder_mensaje')"
             required
         ></textarea>
-        <button type="submit" class="submit-button">Enviar Mensaje</button>
+        <button type="submit" class="submit-button">{{ $t("enviar_mensaje") }}</button>
       </form>
     </div>
   </div>

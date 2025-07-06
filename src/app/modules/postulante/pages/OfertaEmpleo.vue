@@ -97,12 +97,12 @@ export default {
 <template>
   <div class="job-board-container">
     <div class="board-header">
-      <h1>Encuentra tu Próximo Desafío</h1>
-      <p>Explora las últimas oportunidades que tenemos para ti.</p>
+      <h1>{{ $t("encuentra_desafio") }}</h1>
+      <p>{{ $t("explora_oportunidades") }}</p>
       <input
           v-model="filtroBusqueda"
           type="text"
-          placeholder="Buscar por puesto o ubicación..."
+          :placeholder="$t('placeholder_busqueda')"
           class="search-bar"
       />
     </div>
@@ -127,7 +127,7 @@ export default {
         </div>
       </div>
       <div v-if="ofertasFiltradas.length === 0" class="no-results">
-        No se encontraron ofertas que coincidan con tu búsqueda.
+        {{ $t("sin_resultados") }}
       </div>
     </div>
 

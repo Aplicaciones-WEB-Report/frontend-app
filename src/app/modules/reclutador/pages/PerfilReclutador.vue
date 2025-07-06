@@ -79,26 +79,26 @@ const procesarGuardado = async (payload) => {
   <div class="pagina-perfil-contenedor">
     <div v-if="!modoEdicion" class="tarjeta-vista-perfil">
       <div class="cabecera-vista-perfil">
-        <h1 class="titulo-vista-perfil">Perfil</h1>
+        <h1 class="titulo-vista-perfil">{{ $t('perfil') }}</h1>
       </div>
 
       <div class="p-grid grid-principal-vista">
         <div class="p-col-12 md:p-col-8 columna-info-principal-vista">
           <div class="p-field">
-            <label>Nombre de la Empresa</label>
+            <label>{{ $t('nombre_empresa') }}</label>
             <div class="valor-visualizacion">{{ perfil.companyName }}</div>
           </div>
           <div class="p-field">
-            <label>Correo Electrónico</label>
+            <label>{{ $t('correo_electronico') }}</label>
             <div class="valor-visualizacion">{{ perfil.email }}</div>
           </div>
           <div class="p-field">
-            <label>Descripción</label>
+            <label>{{ $t('descripcion') }}</label>
             <div class="valor-visualizacion descripcion">{{ perfil.description }}</div>
           </div>
           <div class="contenedor-acciones-vista">
             <pv-button
-                label="Editar Perfil"
+                :label="$t('editar_perfil')"
                 class="boton-editar-vista"
                 @click="activarModoEdicion"
             />
@@ -106,7 +106,7 @@ const procesarGuardado = async (payload) => {
         </div>
 
         <div class="p-col-12 md:p-col-4 columna-logo-vista">
-          <p class="etiqueta-logo-vista">Logo de la Empresa</p>
+          <p class="etiqueta-logo-vista">{{ $t('logo_empresa') }}</p>
           <div class="circulo-logo-vista">
             <img v-if="perfil.logoUrl" :src="perfil.logoUrl" alt="Logo Empresa" class="imagen-logo-empresa-vista"/>
             <span v-else class="pi pi-camera icono-placeholder-logo"></span>

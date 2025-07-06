@@ -76,40 +76,40 @@ export default {
 
 <template>
   <div class="mis-postulaciones-container">
-    <h1>Postulaciones</h1>
-    <p class="subtitle">Mis Postulaciones</p>
+    <h1>{{ $t("postulaciones_titulo") }}</h1>
+    <p class="subtitle">{{ $t("mis_postulaciones") }}</p>
 
     <div class="controls">
       <input
           v-model="filtroTitulo"
           type="text"
-          placeholder="Buscar por título..."
+          :placeholder="$t('buscar_titulo_placeholder')"
           class="search-input"
       />
     </div>
 
     <div class="postulaciones-table">
-      <div class="table-header">Título</div>
-      <div class="table-header">Resultado</div>
-      <div class="table-header">Mensajes</div>
-      <div class="table-header">Acciones</div>
+      <div class="table-header">{{ $t("columna_titulo") }}</div>
+      <div class="table-header">{{ $t("columna_resultado") }}</div>
+      <div class="table-header">{{ $t("columna_mensajes") }}</div>
+      <div class="table-header">{{ $t("columna_acciones") }}</div>
 
       <template v-if="postulacionesFiltradas.length > 0">
         <template v-for="postulacion in postulacionesFiltradas" :key="postulacion.applicationId">
-          <div class="table-cell" :data-label="'Título'">{{ postulacion.title }}</div>
-          <div class="table-cell" :data-label="'Resultado'">
+          <div class="table-cell" :data-label="$t('columna_titulo')">{{ postulacion.title }}</div>
+          <div class="table-cell" :data-label="$t('columna_resultado')">
             <span class="status-badge">{{ postulacion.resultado }}</span>
           </div>
-          <div class="table-cell" :data-label="'Mensajes'">{{ postulacion.messageCount }}</div>
-          <div class="table-cell actions" :data-label="'Acciones'">
+          <div class="table-cell" :data-label="$t('columna_mensajes')">{{ postulacion.messageCount }}</div>
+          <div class="table-cell actions" :data-label="$t('columna_acciones')">
             <button class="action-btn ver" @click="abrirModalVer(postulacion)">Ver</button>
             <button class="action-btn eliminar" @click="eliminarPostulacion(postulacion.applicationId)">Eliminar</button>
           </div>
         </template>
-
       </template>
+
       <div v-else class="no-data">
-        No has realizado ninguna postulación.
+        {{ $t("sin_postulaciones") }}
       </div>
     </div>
 
@@ -120,7 +120,6 @@ export default {
         <button @click="modalVer = false">Cerrar</button>
       </div>
     </div>
-
   </div>
 </template>
 

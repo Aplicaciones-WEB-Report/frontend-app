@@ -16,37 +16,37 @@ export default {
 <template>
   <div class="modal">
     <div class="modal-content">
-      <h3>Candidatos</h3>
+      <h3>{{ $t("titulo_candidatos") }}</h3>
 
       <div class="mb-2">
-        <label class="modal-label">Nombre del Candidato</label>
+        <label class="modal-label">{{ $t("nombre_candidato") }}</label>
         <input :value="candidato.name" type="text" class="modal-input w-full" readonly />
       </div>
 
       <div class="mb-2">
-        <label class="modal-label">Puesto al que postula</label>
+        <label class="modal-label">{{ $t("puesto_postula") }}</label>
         <input :value="candidato.publicationNumber" type="text" class="modal-input w-full" readonly />
       </div>
 
       <div class="mb-3">
-        <label class="modal-label">Curriculum Vitae</label>
+        <label class="modal-label">{{ $t("curriculum_vitae") }}</label>
         <div class="cv-container flex flex-column sm:flex-row align-items-start sm:align-items-center gap-2 mt-1 mb-3">
           <input :value="candidato.cv" type="text" class="modal-input" readonly />
-          <a :href="candidato.cv" target="_blank" class="descargar-btn">Descargar</a>
+          <a :href="candidato.cv" target="_blank" class="descargar-btn">{{ $t("descargar") }}</a>
         </div>
       </div>
 
       <div class="mb-3">
-        <label class="modal-label">Estado del Postulante</label>
+        <label class="modal-label">{{ $t("estado_postulante") }}</label>
         <div class="estado-buttons flex flex-wrap gap-2 mt-1">
-          <button :class="{ 'estado-activo': candidato.status === 'Posible' }" @click="setEstado('Posible')">Posible</button>
-          <button :class="{ 'estado-activo': candidato.status === 'Denegado' }" @click="setEstado('Denegado')">Denegado</button>
+          <button :class="{ 'estado-activo': candidato.status === 'Posible' }" @click="setEstado('Posible')">{{ $t("posible") }}</button>
+          <button :class="{ 'estado-activo': candidato.status === 'Denegado' }" @click="setEstado('Denegado')">{{ $t("denegado") }}</button>
         </div>
       </div>
 
       <div class="flex flex-column gap-3 mt-3">
-        <button class="actualizar" @click="$emit('actualizar', candidato)">Actualizar Estado</button>
-        <button class="cerrar" @click="$emit('cerrar')">Cerrar</button>
+        <button class="actualizar" @click="$emit('actualizar', candidato)">{{ $t("actualizar_estado") }}</button>
+        <button class="cerrar" @click="$emit('cerrar')">{{ $t("cerrar") }}</button>
       </div>
     </div>
   </div>

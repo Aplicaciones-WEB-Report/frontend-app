@@ -90,7 +90,7 @@ export default {
     </div>
 
     <div v-else class="no-notifications">
-      No tienes notificaciones nuevas.
+      {{ $t("sin_notificaciones") }}
     </div>
   </div>
 </template>
