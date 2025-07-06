@@ -44,21 +44,15 @@ export default {
     async cargarPublicaciones() {
       try {
         const currentUser = JSON.parse(localStorage.getItem('user'));
-        if (!currentUser || currentUser.role !== 'employer') {
-          console.error("No se encontró un reclutador logueado.");
+        const token = localStorage.getItem('token');
+
+        if (!currentUser || !token) {
+          console.error("Usuario no autenticado.");
           return;
         }
 
-        const [publicationsResponse, applicationsResponse] = await getAllPublications(currentUser.id);
-        const jobOffers = publicationsResponse.data;
-        const applications = applicationsResponse.data;
-
-        const publicationsWithCounts = jobOffers.map(offer => {
-          const applicationCount = applications.filter(app => app.job_offer_id === offer.id).length;
-          return { ...offer, applicationCount };
-        });
-
-        this.publicaciones = publicationsWithCounts;
+        const response = await getAllPublications(currentUser.id, token);
+        this.publicaciones = response.data;
       } catch (error) {
         console.error("Error al cargar publicaciones:", error);
       }
