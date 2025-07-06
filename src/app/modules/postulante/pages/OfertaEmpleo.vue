@@ -33,17 +33,19 @@ export default {
       return user ? user.id : null;
     },
     async cargarOfertas() {
-      const userId = this.getUserId();
-      if (!userId) {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (!user || !token) {
         this.isLoading = false;
         return;
       }
+
       this.isLoading = true;
+
       try {
-        const [offersResponse, myAppsResponse] = await getJobBoardData(userId);
-        this.jobOffers = offersResponse.data;
-        const appliedOfferIds = myAppsResponse.data.map(app => String(app.job_offer_id));
-        this.myAppliedIds = new Set(appliedOfferIds);
+        const offers = await getJobBoardData();
+        this.jobOffers = offers;
+        this.myAppliedIds = new Set(); // podrías llenarlo si tienes endpoint de postulaciones
       } catch (error) {
         console.error("Error al cargar ofertas de empleo:", error);
       } finally {
@@ -92,7 +94,6 @@ export default {
   }
 };
 </script>
-
 <template>
   <div class="job-board-container">
     <div class="board-header">

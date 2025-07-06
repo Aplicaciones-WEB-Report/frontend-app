@@ -1,20 +1,20 @@
 <script>
 import Card from "primevue/card";
 import Chart from "primevue/chart";
-// Usaremos el servicio de publicaciones para obtener los datos
 import { getAllPublications } from '../services/Publication.service.js';
+import { Publication } from "../model/Publication.entity.js";
 
 export default {
   name: "PrincipalReclutador",
   components: { Card, Chart },
   data() {
     return {
-      publicaciones: [], // Se llenará dinámicamente
-      chartData1: { // Se llenará dinámicamente
+      publicaciones: [],
+      chartData1: {
         labels: [],
         datasets: [
           {
-            label: 'Aplicaciones',
+            label: 'Aplicaciones simuladas',
             backgroundColor: ['#a8dadc', '#457b9d', '#1d3557', '#74c69d', '#e63946'],
             data: []
           }
@@ -29,52 +29,56 @@ export default {
   },
   computed: {
     totalAplicaciones() {
-      return this.publicaciones.reduce((acc, pub) => acc + pub.solicitudes, 0);
+      return this.chartData1.datasets[0].data.reduce((acc, val) => acc + val, 0);
     }
   },
   methods: {
     async cargarDatosDelPanel() {
       try {
-        const currentUser = JSON.parse(localStorage.getItem('user'));
-        if (!currentUser || currentUser.role !== 'employer') return;
+        console.log("🟢 Ejecutando cargarDatosDelPanel()");
 
-        // 1. Pedir solo las publicaciones de este reclutador
-        const [publicationsResponse, applicationsResponse] = await getAllPublications(currentUser.id);
-        const misOfertas = publicationsResponse.data;
-        const todasLasPostulaciones = applicationsResponse.data;
+        const rawUser = localStorage.getItem('user');
+        console.log("📦 Usuario crudo desde localStorage:", rawUser);
 
-        // 2. Mapear los datos para las tarjetas y el gráfico
-        const datosPublicaciones = misOfertas.map(offer => {
-          const applicationCount = todasLasPostulaciones.filter(app => app.job_offer_id === offer.id).length;
-          return {
-            titulo: offer.title,
-            solicitudes: applicationCount
-          };
-        });
+        const currentUser = JSON.parse(rawUser);
+        console.log("👤 Usuario parseado:", currentUser);
 
-        this.publicaciones = datosPublicaciones;
+        if (!currentUser || currentUser.role !== 1) return;
 
-        // 3. Actualizar los datos del gráfico
-        const labels = datosPublicaciones.map(p => p.titulo);
-        const data = datosPublicaciones.map(p => p.solicitudes);
+
+
+        const response = await getAllPublications(currentUser.id); // o sin ID para probar
+        console.log(" Datos recibidos en el panel:", response.data);
+
+        if (!response.data || response.data.length === 0) {
+          console.warn("️ No se encontraron publicaciones.");
+        }
+
+        this.publicaciones = response.data.map(p => new Publication(p));
+
+        const labels = this.publicaciones.map(pub => pub.title);
+        const data = this.publicaciones.map(() => Math.floor(Math.random() * 15) + 1);
 
         this.chartData1 = {
-          ...this.chartData1,
           labels,
-          datasets: [{ ...this.chartData1.datasets[0], data }]
+          datasets: [
+            {
+              ...this.chartData1.datasets[0],
+              data
+            }
+          ]
         };
-
       } catch (error) {
-        console.error("Error al cargar los datos del panel:", error);
+        console.error(" Error al cargar publicaciones:", error);
       }
     }
   },
   mounted() {
+    console.log("🔵 Componente PrincipalReclutador montado");
     this.cargarDatosDelPanel();
   }
 };
 </script>
-
 
 <template>
   <div class="dashboard">
@@ -87,11 +91,11 @@ export default {
         <Card class="card">
           <template #title>
             <p class="subtitle"><i class="pi pi-briefcase icon"></i> Título</p>
-            <span class="titulo">{{ pub.titulo }}</span>
+            <span class="titulo">{{ pub.title }}</span>
           </template>
           <template #footer>
-            <p class="subtitle"><i class="pi pi-users icon"></i> N° Solicitudes</p>
-            <p class="count">{{ pub.solicitudes }} Aplicaciones</p>
+            <p class="subtitle"><i class="pi pi-align-left icon"></i> Descripción</p>
+            <p class="count">{{ pub.description }}</p>
           </template>
         </Card>
       </div>
@@ -105,10 +109,10 @@ export default {
         <h3><i class="pi pi-chart-line chart-icon"></i> Aplicaciones por Publicación</h3>
 
         <Chart
-          v-if="chartData1.datasets[0].data.length"
-          type="bar"
-          :data="chartData1"
-          :options="chartOptions"
+            v-if="chartData1.datasets[0].data.length"
+            type="bar"
+            :data="chartData1"
+            :options="chartOptions"
         />
         <p v-else style="text-align: center; color: #888;">No hay datos disponibles para mostrar el gráfico.</p>
 
@@ -121,7 +125,6 @@ export default {
   </div>
 </template>
 
-
 <style scoped>
 .dashboard {
   padding: 20px;
@@ -129,7 +132,6 @@ export default {
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* Header */
 .header {
   background-color: #1d578c;
   color: #fff;
@@ -144,7 +146,6 @@ export default {
   font-weight: 600;
 }
 
-/* Cards layout */
 .cards {
   display: flex;
   flex-wrap: wrap;
@@ -190,7 +191,6 @@ export default {
   color: #2c3e50;
 }
 
-/* Analítica */
 .analiticas-section {
   margin-top: 40px;
 }
@@ -212,7 +212,6 @@ export default {
   font-size: 1.4rem;
 }
 
-/* Gráfico */
 .chart-box {
   background-color: white;
   padding: 24px;
@@ -229,7 +228,6 @@ export default {
   text-align: center;
 }
 
-/* Total apps */
 .total-box {
   margin-top: 25px;
   text-align: center;
@@ -249,7 +247,6 @@ export default {
   color: #0d3b66;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .cards {
     flex-direction: column;

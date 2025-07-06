@@ -1,6 +1,5 @@
 <script>
 import Chart from 'primevue/chart';
-// ¡Importante! Usaremos el servicio de publicaciones, no el de job_offers_summary que era para datos falsos
 import { getAllPublications } from '../services/Publication.service.js';
 
 export default {
@@ -10,11 +9,23 @@ export default {
     return {
       chartData1: {
         labels: [],
-        datasets: [{ label: 'Aplicaciones', backgroundColor: ['#c4e4af', '#d7f0cb', '#b0eaa0', '#a0d08f', '#99d199'], data: [] }]
+        datasets: [
+          {
+            label: 'Aplicaciones simuladas',
+            backgroundColor: ['#c4e4af', '#d7f0cb', '#b0eaa0', '#a0d08f', '#99d199'],
+            data: []
+          }
+        ]
       },
-      chartData2: { // Gráfico para visualizaciones (datos simulados por ahora)
+      chartData2: {
         labels: [],
-        datasets: [{ label: 'Visualizaciones', backgroundColor: ['#6a93b3', '#296597', '#6996bd', '#226397', '#5d7fa3'], data: [] }]
+        datasets: [
+          {
+            label: 'Visualizaciones simuladas',
+            backgroundColor: ['#6a93b3', '#296597', '#6996bd', '#226397', '#5d7fa3'],
+            data: []
+          }
+        ]
       },
       chartOptions: {
         responsive: true,
@@ -27,34 +38,32 @@ export default {
     async cargarAnaliticas() {
       try {
         const currentUser = JSON.parse(localStorage.getItem('user'));
-        if (!currentUser || currentUser.role !== 'employer') return;
+        if (!currentUser || currentUser.role !== 1) {
+          console.warn("❌ Usuario inválido o sin rol correcto.");
+          return;
+        }
 
-        // 1. Obtener las publicaciones y postulaciones del reclutador
-        const [publicationsResponse, applicationsResponse] = await getAllPublications(currentUser.id);
-        const misOfertas = publicationsResponse.data;
-        const todasLasPostulaciones = applicationsResponse.data;
+        const response = await getAllPublications(currentUser.id);
+        const misPublicaciones = response.data;
 
-        // 2. Mapear los datos para los gráficos
-        const analyticsData = misOfertas.map(offer => {
-          const applicationCount = todasLasPostulaciones.filter(app => app.job_offer_id === offer.id).length;
-          return {
-            title: offer.title,
-            applications: applicationCount,
-            // Las visualizaciones no están en tu db.json, así que las simulamos con un número aleatorio
-            views: Math.floor(Math.random() * (200 - 50 + 1)) + 50
-          };
-        });
+        const titles = misPublicaciones.map(p => p.title);
+        const simulatedApps = misPublicaciones.map(() => Math.floor(Math.random() * 20) + 1);
+        const simulatedViews = misPublicaciones.map(() => Math.floor(Math.random() * 150) + 50);
 
-        const titles = analyticsData.map(item => item.title);
-        const apps = analyticsData.map(item => item.applications);
-        const views = analyticsData.map(item => item.views);
+        this.chartData1 = {
+          ...this.chartData1,
+          labels: titles,
+          datasets: [{ ...this.chartData1.datasets[0], data: simulatedApps }]
+        };
 
-        // 3. Actualizar datos de los gráficos
-        this.chartData1 = { ...this.chartData1, labels: titles, datasets: [{...this.chartData1.datasets[0], data: apps}] };
-        this.chartData2 = { ...this.chartData2, labels: titles, datasets: [{...this.chartData2.datasets[0], data: views}] };
+        this.chartData2 = {
+          ...this.chartData2,
+          labels: titles,
+          datasets: [{ ...this.chartData2.datasets[0], data: simulatedViews }]
+        };
 
       } catch (error) {
-        console.error("Error al cargar analíticas:", error);
+        console.error("❌ Error al cargar analíticas:", error);
       }
     }
   },
