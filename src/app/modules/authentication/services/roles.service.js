@@ -1,7 +1,7 @@
 import axios from 'axios';
 import router from '../../../routers/router.js';
 
-const API_URL = 'http://localhost:5195/api';
+const API_URL = 'https://app-250706133042.azurewebsites.net/api';
 
 const roleMapping = {
     postulante: 'candidate',

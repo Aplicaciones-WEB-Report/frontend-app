@@ -5,6 +5,6 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   server: {
-    port: 5176 // <<--- El puerto para conectar al backend con CORS
+    port: 5173 // <<--- El puerto para conectar al backend con CORS
   }
 })

@@ -30,7 +30,7 @@ export default {
         const query = new URLSearchParams({ objective: this.objective }).toString()
 
         const { data } = await axios.post(
-            `http://localhost:5195/api/document/analyze-pdf?${query}`,
+            `https://app-250706133042.azurewebsites.net/api/document/analyze-pdf?${query}`,
             formData,
             { headers: { 'Content-Type': 'multipart/form-data' } }
         )

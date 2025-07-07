@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5195/api/joboffers'; // Ajustado al backend real
+const API_URL = 'https://app-250706133042.azurewebsites.net/api/joboffers'; // Ajustado al backend real
 
 export const getAllPublications = (employerId) => {
     const token = localStorage.getItem('token');

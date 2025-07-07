@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5195/api';
+const API_URL = 'https://app-250706133042.azurewebsites.net/api';
 
 // 👉 Función para obtener el token del localStorage
 const getAuthHeaders = () => {
